@@ -2940,27 +2940,6 @@ md-bottom-sheet {
         text-align: center;
         padding-top: 8px; }
 
-md-card {
-  box-sizing: border-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-direction: column;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  margin: 8px;
-  box-shadow: 0px 2px 5px 0 rgba(0, 0, 0, 0.26); }
-  md-card > img {
-    -webkit-order: 0;
-        -ms-flex-order: 0;
-            order: 0;
-    width: 100%; }
-  md-card md-card-content {
-    -webkit-order: 1;
-        -ms-flex-order: 1;
-            order: 1;
-    padding: 16px; }
-
 /**
  * Position a FAB button.
  */
@@ -3082,6 +3061,27 @@ md-card {
   .md-button-group > .md-button:last-child {
     border-right-width: 1px;
     border-radius: 0px 2px 2px 0px; }
+
+md-card {
+  box-sizing: border-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  margin: 8px;
+  box-shadow: 0px 2px 5px 0 rgba(0, 0, 0, 0.26); }
+  md-card > img {
+    -webkit-order: 0;
+        -ms-flex-order: 0;
+            order: 0;
+    width: 100%; }
+  md-card md-card-content {
+    -webkit-order: 1;
+        -ms-flex-order: 1;
+            order: 1;
+    padding: 16px; }
 
 md-checkbox {
   display: block;
@@ -5638,6 +5638,73 @@ md-switch {
   md-switch:not(.md-dragging) .md-bar, md-switch:not(.md-dragging) .md-thumb {
     transition-delay: 0.05s; }
 
+md-input-group label, .md-input-group label {
+  display: block;
+  font-size: 0.75em; }
+md-input-group textarea, md-input-group input[type="text"], md-input-group input[type="password"], md-input-group input[type="datetime"], md-input-group input[type="datetime-local"], md-input-group input[type="date"], md-input-group input[type="month"], md-input-group input[type="time"], md-input-group input[type="week"], md-input-group input[type="number"], md-input-group input[type="email"], md-input-group input[type="url"], md-input-group input[type="search"], md-input-group input[type="tel"], md-input-group input[type="color"], .md-input-group textarea, .md-input-group input[type="text"], .md-input-group input[type="password"], .md-input-group input[type="datetime"], .md-input-group input[type="datetime-local"], .md-input-group input[type="date"], .md-input-group input[type="month"], .md-input-group input[type="time"], .md-input-group input[type="week"], .md-input-group input[type="number"], .md-input-group input[type="email"], .md-input-group input[type="url"], .md-input-group input[type="search"], .md-input-group input[type="tel"], .md-input-group input[type="color"] {
+  display: block;
+  border-width: 0 0 1px 0;
+  padding-top: 2px;
+  line-height: 26px;
+  padding-bottom: 1px; }
+  md-input-group textarea:focus, md-input-group input[type="text"]:focus, md-input-group input[type="password"]:focus, md-input-group input[type="datetime"]:focus, md-input-group input[type="datetime-local"]:focus, md-input-group input[type="date"]:focus, md-input-group input[type="month"]:focus, md-input-group input[type="time"]:focus, md-input-group input[type="week"]:focus, md-input-group input[type="number"]:focus, md-input-group input[type="email"]:focus, md-input-group input[type="url"]:focus, md-input-group input[type="search"]:focus, md-input-group input[type="tel"]:focus, md-input-group input[type="color"]:focus, .md-input-group textarea:focus, .md-input-group input[type="text"]:focus, .md-input-group input[type="password"]:focus, .md-input-group input[type="datetime"]:focus, .md-input-group input[type="datetime-local"]:focus, .md-input-group input[type="date"]:focus, .md-input-group input[type="month"]:focus, .md-input-group input[type="time"]:focus, .md-input-group input[type="week"]:focus, .md-input-group input[type="number"]:focus, .md-input-group input[type="email"]:focus, .md-input-group input[type="url"]:focus, .md-input-group input[type="search"]:focus, .md-input-group input[type="tel"]:focus, .md-input-group input[type="color"]:focus {
+    outline: 0; }
+md-input-group input, md-input-group textarea, .md-input-group input, .md-input-group textarea {
+  background: none; }
+
+md-input-group, .md-input-group {
+  padding-bottom: 2px;
+  margin: 10px 0 8px 0;
+  position: relative;
+  display: block; }
+  md-input-group label, .md-input-group label {
+    font-size: 1em;
+    z-index: 1;
+    pointer-events: none;
+    -webkit-font-smoothing: antialiased; }
+    md-input-group label:hover, .md-input-group label:hover {
+      cursor: text; }
+  md-input-group label, .md-input-group label {
+    -webkit-transform: translate3d(0, 22px, 0);
+            transform: translate3d(0, 22px, 0);
+    -webkit-transform-origin: left center;
+            transform-origin: left center;
+    transition: all 0.15s cubic-bezier(0.35, 0, 0.25, 1);
+    transition: all 0.15s cubic-bezier(0.35, 0, 0.25, 1); }
+  md-input-group input, md-input-group textarea, .md-input-group input, .md-input-group textarea {
+    border-bottom-width: 1px;
+    transition: all 0.15s cubic-bezier(0.35, 0, 0.25, 1); }
+  md-input-group.md-input-focused label, .md-input-group.md-input-focused label {
+    -webkit-transform: translate3d(0, 4px, 0) scale(0.75);
+            transform: translate3d(0, 4px, 0) scale(0.75); }
+  md-input-group.md-input-focused input, md-input-group.md-input-focused textarea, .md-input-group.md-input-focused input, .md-input-group.md-input-focused textarea {
+    border-bottom-width: 2px; }
+  md-input-group.md-input-focused input, .md-input-group.md-input-focused input {
+    padding-bottom: 0px; }
+  md-input-group.md-input-has-value label, .md-input-group.md-input-has-value label {
+    -webkit-transform: translate3d(0, 4px, 0) scale(0.75);
+            transform: translate3d(0, 4px, 0) scale(0.75); }
+  md-input-group.md-input-has-value:not(.md-input-focused) label, .md-input-group.md-input-has-value:not(.md-input-focused) label {
+    -webkit-transform: translate3d(0, 4px, 0) scale(0.75);
+            transform: translate3d(0, 4px, 0) scale(0.75); }
+  md-input-group[disabled] input, md-input-group[disabled] textarea, .md-input-group[disabled] input, .md-input-group[disabled] textarea {
+    border-bottom-width: 0px; }
+  md-input-group[disabled] input, md-input-group[disabled] textarea, .md-input-group[disabled] input, .md-input-group[disabled] textarea {
+    background-size: 3px 1px;
+    background-position: 0 bottom;
+    background-size: 2px 1px;
+    background-repeat: repeat-x;
+    pointer-events: none; }
+  md-input-group[disabled] label, .md-input-group[disabled] label {
+    -webkit-transform: translate3d(0, 4px, 0) scale(0.75);
+            transform: translate3d(0, 4px, 0) scale(0.75); }
+  md-input-group[disabled] *:not(.md-input-has-value) label, .md-input-group[disabled] *:not(.md-input-has-value) label {
+    -webkit-transform: translate3d(0, 22px, 0);
+            transform: translate3d(0, 22px, 0);
+    -webkit-transform-origin: left center;
+            transform-origin: left center;
+    transition: all 0.15s cubic-bezier(0.35, 0, 0.25, 1); }
+
 md-tabs {
   display: block;
   width: 100%;
@@ -5802,72 +5869,69 @@ md-tab {
     opacity: 1;
     overflow: hidden; }
 
-md-input-group label, .md-input-group label {
-  display: block;
-  font-size: 0.75em; }
-md-input-group textarea, md-input-group input[type="text"], md-input-group input[type="password"], md-input-group input[type="datetime"], md-input-group input[type="datetime-local"], md-input-group input[type="date"], md-input-group input[type="month"], md-input-group input[type="time"], md-input-group input[type="week"], md-input-group input[type="number"], md-input-group input[type="email"], md-input-group input[type="url"], md-input-group input[type="search"], md-input-group input[type="tel"], md-input-group input[type="color"], .md-input-group textarea, .md-input-group input[type="text"], .md-input-group input[type="password"], .md-input-group input[type="datetime"], .md-input-group input[type="datetime-local"], .md-input-group input[type="date"], .md-input-group input[type="month"], .md-input-group input[type="time"], .md-input-group input[type="week"], .md-input-group input[type="number"], .md-input-group input[type="email"], .md-input-group input[type="url"], .md-input-group input[type="search"], .md-input-group input[type="tel"], .md-input-group input[type="color"] {
-  display: block;
-  border-width: 0 0 1px 0;
-  padding-top: 2px;
-  line-height: 26px;
-  padding-bottom: 1px; }
-  md-input-group textarea:focus, md-input-group input[type="text"]:focus, md-input-group input[type="password"]:focus, md-input-group input[type="datetime"]:focus, md-input-group input[type="datetime-local"]:focus, md-input-group input[type="date"]:focus, md-input-group input[type="month"]:focus, md-input-group input[type="time"]:focus, md-input-group input[type="week"]:focus, md-input-group input[type="number"]:focus, md-input-group input[type="email"]:focus, md-input-group input[type="url"]:focus, md-input-group input[type="search"]:focus, md-input-group input[type="tel"]:focus, md-input-group input[type="color"]:focus, .md-input-group textarea:focus, .md-input-group input[type="text"]:focus, .md-input-group input[type="password"]:focus, .md-input-group input[type="datetime"]:focus, .md-input-group input[type="datetime-local"]:focus, .md-input-group input[type="date"]:focus, .md-input-group input[type="month"]:focus, .md-input-group input[type="time"]:focus, .md-input-group input[type="week"]:focus, .md-input-group input[type="number"]:focus, .md-input-group input[type="email"]:focus, .md-input-group input[type="url"]:focus, .md-input-group input[type="search"]:focus, .md-input-group input[type="tel"]:focus, .md-input-group input[type="color"]:focus {
-    outline: 0; }
-md-input-group input, md-input-group textarea, .md-input-group input, .md-input-group textarea {
-  background: none; }
-
-md-input-group, .md-input-group {
-  padding-bottom: 2px;
-  margin: 10px 0 8px 0;
+md-toolbar {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
   position: relative;
-  display: block; }
-  md-input-group label, .md-input-group label {
-    font-size: 1em;
-    z-index: 1;
-    pointer-events: none;
-    -webkit-font-smoothing: antialiased; }
-    md-input-group label:hover, .md-input-group label:hover {
-      cursor: text; }
-  md-input-group label, .md-input-group label {
-    -webkit-transform: translate3d(0, 22px, 0);
-            transform: translate3d(0, 22px, 0);
-    -webkit-transform-origin: left center;
-            transform-origin: left center;
-    transition: all 0.15s cubic-bezier(0.35, 0, 0.25, 1);
-    transition: all 0.15s cubic-bezier(0.35, 0, 0.25, 1); }
-  md-input-group input, md-input-group textarea, .md-input-group input, .md-input-group textarea {
-    border-bottom-width: 1px;
-    transition: all 0.15s cubic-bezier(0.35, 0, 0.25, 1); }
-  md-input-group.md-input-focused label, .md-input-group.md-input-focused label {
-    -webkit-transform: translate3d(0, 4px, 0) scale(0.75);
-            transform: translate3d(0, 4px, 0) scale(0.75); }
-  md-input-group.md-input-focused input, md-input-group.md-input-focused textarea, .md-input-group.md-input-focused input, .md-input-group.md-input-focused textarea {
-    border-bottom-width: 2px; }
-  md-input-group.md-input-focused input, .md-input-group.md-input-focused input {
-    padding-bottom: 0px; }
-  md-input-group.md-input-has-value label, .md-input-group.md-input-has-value label {
-    -webkit-transform: translate3d(0, 4px, 0) scale(0.75);
-            transform: translate3d(0, 4px, 0) scale(0.75); }
-  md-input-group.md-input-has-value:not(.md-input-focused) label, .md-input-group.md-input-has-value:not(.md-input-focused) label {
-    -webkit-transform: translate3d(0, 4px, 0) scale(0.75);
-            transform: translate3d(0, 4px, 0) scale(0.75); }
-  md-input-group[disabled] input, md-input-group[disabled] textarea, .md-input-group[disabled] input, .md-input-group[disabled] textarea {
-    border-bottom-width: 0px; }
-  md-input-group[disabled] input, md-input-group[disabled] textarea, .md-input-group[disabled] input, .md-input-group[disabled] textarea {
-    background-size: 3px 1px;
-    background-position: 0 bottom;
-    background-size: 2px 1px;
-    background-repeat: repeat-x;
-    pointer-events: none; }
-  md-input-group[disabled] label, .md-input-group[disabled] label {
-    -webkit-transform: translate3d(0, 4px, 0) scale(0.75);
-            transform: translate3d(0, 4px, 0) scale(0.75); }
-  md-input-group[disabled] *:not(.md-input-has-value) label, .md-input-group[disabled] *:not(.md-input-has-value) label {
-    -webkit-transform: translate3d(0, 22px, 0);
-            transform: translate3d(0, 22px, 0);
-    -webkit-transform-origin: left center;
-            transform-origin: left center;
-    transition: all 0.15s cubic-bezier(0.35, 0, 0.25, 1); }
+  z-index: 2;
+  font-size: 1.3em;
+  min-height: 64px;
+  width: 100%; }
+  md-toolbar.md-tall {
+    height: 128px;
+    min-height: 128px;
+    max-height: 128px; }
+  md-toolbar.md-medium-tall {
+    height: 88px;
+    min-height: 88px;
+    max-height: 88px; }
+    md-toolbar.md-medium-tall .md-toolbar-tools {
+      height: 48px;
+      min-height: 48px;
+      max-height: 48px; }
+  md-toolbar .md-indent {
+    margin-left: 64px; }
+
+.md-toolbar-tools {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-flex-direction: row;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  width: 100%;
+  height: 64px;
+  min-height: 100%;
+  max-height: 64px;
+  font-size: inherit;
+  font-weight: normal;
+  padding: 0 16px;
+  margin: 0; }
+  .md-toolbar-tools > * {
+    font-size: inherit; }
+  .md-toolbar-tools h2, .md-toolbar-tools h3 {
+    font-weight: normal; }
+  .md-toolbar-tools a {
+    color: inherit;
+    text-decoration: none; }
+  .md-toolbar-tools .fill-height {
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-align-items: center;
+        -ms-flex-align: center;
+            align-items: center; }
+  .md-toolbar-tools .md-tools {
+    margin-left: auto; }
+  .md-toolbar-tools .md-button {
+    font-size: 14px; }
 
 md-toast {
   display: -webkit-flex;
@@ -5973,70 +6037,6 @@ md-toast {
       -webkit-transform: translate3d(100%, 0, 0) rotateZ(15deg);
               transform: translate3d(100%, 0, 0) rotateZ(15deg); }
  }
-
-md-toolbar {
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-direction: column;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  position: relative;
-  z-index: 2;
-  font-size: 1.3em;
-  min-height: 64px;
-  width: 100%; }
-  md-toolbar.md-tall {
-    height: 128px;
-    min-height: 128px;
-    max-height: 128px; }
-  md-toolbar.md-medium-tall {
-    height: 88px;
-    min-height: 88px;
-    max-height: 88px; }
-    md-toolbar.md-medium-tall .md-toolbar-tools {
-      height: 48px;
-      min-height: 48px;
-      max-height: 48px; }
-  md-toolbar .md-indent {
-    margin-left: 64px; }
-
-.md-toolbar-tools {
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-align-items: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-flex-direction: row;
-      -ms-flex-direction: row;
-          flex-direction: row;
-  width: 100%;
-  height: 64px;
-  min-height: 100%;
-  max-height: 64px;
-  font-size: inherit;
-  font-weight: normal;
-  padding: 0 16px;
-  margin: 0; }
-  .md-toolbar-tools > * {
-    font-size: inherit; }
-  .md-toolbar-tools h2, .md-toolbar-tools h3 {
-    font-weight: normal; }
-  .md-toolbar-tools a {
-    color: inherit;
-    text-decoration: none; }
-  .md-toolbar-tools .fill-height {
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-align-items: center;
-        -ms-flex-align: center;
-            align-items: center; }
-  .md-toolbar-tools .md-tools {
-    margin-left: auto; }
-  .md-toolbar-tools .md-button {
-    font-size: 14px; }
 
 @-webkit-keyframes tooltipBackgroundShow {
   0% {
