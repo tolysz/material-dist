@@ -5512,7 +5512,7 @@ SliderDirective.$inject = ["$mdTheming"];
  * We use a controller for all the logic so that we can expose a few
  * things to unit tests
  */
-function SliderController($scope, $element, $attrs, $$rAF, $window, $mdAria, $mdUtil, $mdConstant) {
+function SliderController($scope, $element, $attrs, $$rAF, $window, $mdAria, $mdUtil, $mdConstant, $log) {
 
   this.init = function init(ngModelCtrl) {
     var thumb = angular.element($element[0].querySelector('.md-thumb'));
@@ -5597,11 +5597,9 @@ function SliderController($scope, $element, $attrs, $$rAF, $window, $mdAria, $md
       step = parseFloat(value);
       redrawTicks();
     }
-    
     function updateLabel(value) {
-      label = parseFloat(value);
+      label = value;
     }
-    
     function updateAriaDisabled(isDisabled) {
       $element.attr('aria-disabled', !!isDisabled);
     }
@@ -5830,7 +5828,7 @@ function SliderController($scope, $element, $attrs, $$rAF, $window, $mdAria, $md
 
   };
 }
-SliderController.$inject = ["$scope", "$element", "$attrs", "$$rAF", "$window", "$mdAria", "$mdUtil", "$mdConstant"];
+SliderController.$inject = ["$scope", "$element", "$attrs", "$$rAF", "$window", "$mdAria", "$mdUtil", "$mdConstant", "$log"];
 })();
 
 /*!
