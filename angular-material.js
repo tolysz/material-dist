@@ -5599,6 +5599,7 @@ function SliderController($scope, $element, $attrs, $$rAF, $window, $mdAria, $md
     }
     function updateLabel(value) {
       label = value;
+      $log.debug(label)
     }
     function updateAriaDisabled(isDisabled) {
       $element.attr('aria-disabled', !!isDisabled);
