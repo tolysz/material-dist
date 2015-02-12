@@ -3341,32 +3341,6 @@ md-checkbox {
         -ms-user-select: text;
             user-select: text; }
 
-md-content {
-  display: block;
-  position: relative;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch; }
-  md-content[md-scroll-y] {
-    overflow-y: auto;
-    overflow-x: hidden; }
-  md-content[md-scroll-x] {
-    overflow-x: auto;
-    overflow-y: hidden; }
-  md-content.md-padding {
-    padding: 8px; }
-
-@media (min-width: 600px) {
-  md-content.md-padding {
-    padding: 16px; }
- }
-
-md-divider {
-  display: block;
-  border-top: 1px solid;
-  margin: 0; }
-  md-divider[md-inset] {
-    margin-left: 80px; }
-
 .md-dialog-container {
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -3437,6 +3411,32 @@ md-dialog {
   md-dialog.md-content-overflow .md-actions {
     border-top: 1px solid; }
 
+md-content {
+  display: block;
+  position: relative;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch; }
+  md-content[md-scroll-y] {
+    overflow-y: auto;
+    overflow-x: hidden; }
+  md-content[md-scroll-x] {
+    overflow-x: auto;
+    overflow-y: hidden; }
+  md-content.md-padding {
+    padding: 8px; }
+
+@media (min-width: 600px) {
+  md-content.md-padding {
+    padding: 16px; }
+ }
+
+md-divider {
+  display: block;
+  border-top: 1px solid;
+  margin: 0; }
+  md-divider[md-inset] {
+    margin-left: 80px; }
+
 md-grid-list, md-grid-tile {
   display: block; }
 
@@ -3491,6 +3491,15 @@ md-grid-tile {
     top: 0; }
   md-grid-tile md-grid-tile-footer {
     bottom: 0; }
+
+md-icon {
+  margin: auto;
+  background-repeat: no-repeat no-repeat;
+  display: inline-block;
+  vertical-align: middle;
+  fill: currentcolor;
+  height: 24px;
+  width: 24px; }
 
 md-input-container {
   display: -webkit-flex;
@@ -3599,15 +3608,6 @@ md-input-container {
     background-position: 0 bottom;
     background-size: 3px 1px;
     background-repeat: repeat-x; }
-
-md-icon {
-  margin: auto;
-  background-repeat: no-repeat no-repeat;
-  display: inline-block;
-  vertical-align: middle;
-  fill: currentcolor;
-  height: 24px;
-  width: 24px; }
 
 md-list {
   padding: 8px 0px 8px 0px; }
