@@ -4,7 +4,7 @@
 , "dependencies": { "angular": "master"
                   , "angular-animate": "master"
                   , "angular-aria": "master"
-                  , "hammerjs": "^2.0.2"
+                  , "hammerjs": "master"
   }
 }
 
