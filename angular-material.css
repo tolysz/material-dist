@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.7.1
+ * v0.8.0-rc1
  */
 *, *:before, *:after {
   box-sizing: border-box; }
@@ -3360,6 +3360,13 @@ md-content {
     padding: 16px; }
  }
 
+md-divider {
+  display: block;
+  border-top: 1px solid;
+  margin: 0; }
+  md-divider[md-inset] {
+    margin-left: 80px; }
+
 .md-dialog-container {
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -3430,13 +3437,6 @@ md-dialog {
   md-dialog.md-content-overflow .md-actions {
     border-top: 1px solid; }
 
-md-divider {
-  display: block;
-  border-top: 1px solid;
-  margin: 0; }
-  md-divider[md-inset] {
-    margin-left: 80px; }
-
 md-grid-list, md-grid-tile {
   display: block; }
 
@@ -3491,15 +3491,6 @@ md-grid-tile {
     top: 0; }
   md-grid-tile md-grid-tile-footer {
     bottom: 0; }
-
-md-icon {
-  margin: auto;
-  background-repeat: no-repeat no-repeat;
-  display: inline-block;
-  vertical-align: middle;
-  fill: currentcolor;
-  height: 24px;
-  width: 24px; }
 
 md-input-container {
   display: -webkit-flex;
@@ -3608,6 +3599,15 @@ md-input-container {
     background-position: 0 bottom;
     background-size: 3px 1px;
     background-repeat: repeat-x; }
+
+md-icon {
+  margin: auto;
+  background-repeat: no-repeat no-repeat;
+  display: inline-block;
+  vertical-align: middle;
+  fill: currentcolor;
+  height: 24px;
+  width: 24px; }
 
 md-list {
   padding: 8px 0px 8px 0px; }
@@ -5943,17 +5943,14 @@ md-tabs {
   background-color: transparent;
   background-repeat: no-repeat;
   background-position: center center;
-  position: absolute;
-  /* TODO Once we have a better way to inline svg images, change this
-   to use svgs correctly */ }
+  position: absolute; }
   .md-paginator.md-prev {
     left: 0; }
   .md-paginator.md-next {
     right: 0; }
-  .md-paginator.md-prev {
-    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE3LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPiA8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPiA8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IiBoZWlnaHQ9IjI0cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMjQgMjQiIHhtbDpzcGFjZT0icHJlc2VydmUiPiA8ZyBpZD0iSGVhZGVyIj4gPGc+IDxyZWN0IHg9Ii02MTgiIHk9Ii0xMjA4IiBmaWxsPSJub25lIiB3aWR0aD0iMTQwMCIgaGVpZ2h0PSIzNjAwIi8+IDwvZz4gPC9nPiA8ZyBpZD0iTGFiZWwiPiA8L2c+IDxnIGlkPSJJY29uIj4gPGc+IDxwb2x5Z29uIHBvaW50cz0iMTUuNCw3LjQgMTQsNiA4LDEyIDE0LDE4IDE1LjQsMTYuNiAxMC44LDEyIAkJIiBzdHlsZT0iZmlsbDp3aGl0ZTsiLz4gPHJlY3QgZmlsbD0ibm9uZSIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0Ii8+IDwvZz4gPC9nPiA8ZyBpZD0iR3JpZCIgZGlzcGxheT0ibm9uZSI+IDxnIGRpc3BsYXk9ImlubGluZSI+IDwvZz4gPC9nPiA8L3N2Zz4NCg=='); }
-  .md-paginator.md-next {
-    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE3LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPiA8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPiA8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyNHB4IiBoZWlnaHQ9IjI0cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMjQgMjQiIHhtbDpzcGFjZT0icHJlc2VydmUiPiA8ZyBpZD0iSGVhZGVyIj4gPGc+IDxyZWN0IHg9Ii02MTgiIHk9Ii0xMzM2IiBmaWxsPSJub25lIiB3aWR0aD0iMTQwMCIgaGVpZ2h0PSIzNjAwIi8+IDwvZz4gPC9nPiA8ZyBpZD0iTGFiZWwiPiA8L2c+IDxnIGlkPSJJY29uIj4gPGc+IDxwb2x5Z29uIHBvaW50cz0iMTAsNiA4LjYsNy40IDEzLjIsMTIgOC42LDE2LjYgMTAsMTggMTYsMTIgCQkiIHN0eWxlPSJmaWxsOndoaXRlOyIvPiA8cmVjdCBmaWxsPSJub25lIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiLz4gPC9nPiA8L2c+IDxnIGlkPSJHcmlkIiBkaXNwbGF5PSJub25lIj4gPGcgZGlzcGxheT0iaW5saW5lIj4gPC9nPiA8L2c+IDwvc3ZnPg0K'); }
+    .md-paginator.md-next md-icon {
+      -webkit-transform: rotate(180deg);
+              transform: rotate(180deg); }
 
 /* If `center` justified, change to left-justify if paginating */
 md-tabs[center] .md-header:not(.md-paginating) .md-header-items {
@@ -6314,21 +6311,6 @@ md-toolbar {
   .md-toolbar-tools .md-button {
     font-size: 14px; }
 
-.md-whiteframe-z1 {
-  box-shadow: 0px 2px 5px 0 rgba(0, 0, 0, 0.26); }
-
-.md-whiteframe-z2 {
-  box-shadow: 0px 8px 17px rgba(0, 0, 0, 0.2); }
-
-.md-whiteframe-z3 {
-  box-shadow: 0px 17px 50px rgba(0, 0, 0, 0.19); }
-
-.md-whiteframe-z4 {
-  box-shadow: 0px 16px 28px 0 rgba(0, 0, 0, 0.22); }
-
-.md-whiteframe-z5 {
-  box-shadow: 0px 27px 24px 0 rgba(0, 0, 0, 0.2); }
-
 md-tooltip {
   position: absolute;
   font-size: 14px;
@@ -6375,3 +6357,18 @@ md-tooltip {
             transform: translate3d(0, 0, 0); }
     md-tooltip.md-show .md-content {
       opacity: 0.99; }
+
+.md-whiteframe-z1 {
+  box-shadow: 0px 2px 5px 0 rgba(0, 0, 0, 0.26); }
+
+.md-whiteframe-z2 {
+  box-shadow: 0px 8px 17px rgba(0, 0, 0, 0.2); }
+
+.md-whiteframe-z3 {
+  box-shadow: 0px 17px 50px rgba(0, 0, 0, 0.19); }
+
+.md-whiteframe-z4 {
+  box-shadow: 0px 16px 28px 0 rgba(0, 0, 0, 0.22); }
+
+.md-whiteframe-z5 {
+  box-shadow: 0px 27px 24px 0 rgba(0, 0, 0, 0.2); }
