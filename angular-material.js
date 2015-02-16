@@ -4,7 +4,7 @@
  * @license MIT
  * v0.8.0-rc1
  */
-angular.module('ngMaterial', ["ng","ngAnimate","ngAria","material.core","material.core.theming.palette","material.core.theming","material.components.autocomplete","material.components.backdrop","material.components.bottomSheet","material.components.button","material.components.card","material.components.checkbox","material.components.dialog","material.components.content","material.components.divider","material.components.gridList","material.components.icon","material.components.input","material.components.list","material.components.progressCircular","material.components.progressLinear","material.components.radioButton","material.components.sidenav","material.components.slider","material.components.sticky","material.components.subheader","material.components.swipe","material.components.switch","material.components.tabs","material.components.textField","material.components.toast","material.components.toolbar","material.components.tooltip","material.components.whiteframe"]);
+angular.module('ngMaterial', ["ng","ngAnimate","ngAria","material.core","material.core.theming.palette","material.core.theming","material.components.autocomplete","material.components.backdrop","material.components.bottomSheet","material.components.button","material.components.card","material.components.checkbox","material.components.content","material.components.dialog","material.components.divider","material.components.gridList","material.components.icon","material.components.input","material.components.list","material.components.progressCircular","material.components.progressLinear","material.components.radioButton","material.components.sidenav","material.components.slider","material.components.sticky","material.components.subheader","material.components.swipe","material.components.switch","material.components.tabs","material.components.textField","material.components.toast","material.components.toolbar","material.components.tooltip","material.components.whiteframe"]);
 /*!
  * Angular Material Design
  * https://github.com/angular/material
@@ -32,11 +32,23 @@ angular
     // be removed from this startup process.
 
 
-    var svgRegistry = [{
-                    id : "tabs-arrow",
-                    url: "tabs-arrow.svg",
-                    svg: '<svg version="1.1" x="0px" y="0px" viewBox="0 0 24 24"><g id="tabs-arrow"><polygon points="15.4,7.4 14,6 8,12 14,18 15.4,16.6 10.8,12 "/></g></svg>'
-                  }];
+    var svgRegistry = [
+      {
+        id : 'tabs-arrow',
+        url: 'tabs-arrow.svg',
+        svg: '<svg version="1.1" x="0px" y="0px" viewBox="0 0 24 24"><g id="tabs-arrow"><polygon points="15.4,7.4 14,6 8,12 14,18 15.4,16.6 10.8,12 "/></g></svg>'
+      },
+      {
+        id : 'close',
+        url: 'close.svg',
+        svg: '<svg version="1.1" x="0px" y="0px" viewBox="0 0 24 24"><g id="close"><path d="M19 6.41l-1.41-1.41-5.59 5.59-5.59-5.59-1.41 1.41 5.59 5.59-5.59 5.59 1.41 1.41 5.59-5.59 5.59 5.59 1.41-1.41-5.59-5.59z"/></g></svg>'
+      },
+      {
+        id:  'cancel',
+        url: 'cancel.svg',
+        svg: '<svg version="1.1" x="0px" y="0px" viewBox="0 0 24 24"><g id="cancel"><path d="M12 2c-5.53 0-10 4.47-10 10s4.47 10 10 10 10-4.47 10-10-4.47-10-10-10zm5 13.59l-1.41 1.41-3.59-3.59-3.59 3.59-1.41-1.41 3.59-3.59-3.59-3.59 1.41-1.41 3.59 3.59 3.59-3.59 1.41 1.41-3.59 3.59 3.59 3.59z"/></g></svg>'
+      }
+    ];
 
     svgRegistry.forEach(function(asset){
       iconProvider.icon(asset.id,  asset.url);
@@ -122,7 +134,8 @@ function MdConstantFactory($$rAF, $sniffer) {
       LEFT_ARROW : 37,
       UP_ARROW : 38,
       RIGHT_ARROW : 39,
-      DOWN_ARROW : 40
+      DOWN_ARROW : 40,
+      TAB : 9
     },
     CSS: {
       /* Constants */
@@ -4007,6 +4020,92 @@ MdCheckboxDirective.$inject = ["inputDirective", "$mdInkRipple", "$mdAria", "$md
 
 /**
  * @ngdoc module
+ * @name material.components.content
+ *
+ * @description
+ * Scrollable content
+ */
+angular.module('material.components.content', [
+  'material.core'
+])
+  .directive('mdContent', mdContentDirective);
+
+/**
+ * @ngdoc directive
+ * @name mdContent
+ * @module material.components.content
+ *
+ * @restrict E
+ *
+ * @description
+ * The `<md-content>` directive is a container element useful for scrollable content
+ *
+ * ### Restrictions
+ *
+ * - Add the `md-padding` class to make the content padded.
+ *
+ * @usage
+ * <hljs lang="html">
+ *  <md-content class="md-padding">
+ *      Lorem ipsum dolor sit amet, ne quod novum mei.
+ *  </md-content>
+ * </hljs>
+ *
+ */
+
+function mdContentDirective($mdTheming) {
+  return {
+    restrict: 'E',
+    controller: ['$scope', '$element', ContentController],
+    link: function(scope, element, attr) {
+      var node = element[0];
+
+      $mdTheming(element);
+      scope.$broadcast('$mdContentLoaded', element);
+
+      iosScrollFix(element[0]);
+    }
+  };
+
+  function ContentController($scope, $element) {
+    this.$scope = $scope;
+    this.$element = $element;
+  }
+}
+mdContentDirective.$inject = ["$mdTheming"];
+
+function iosScrollFix(node) {
+  // IOS FIX:
+  // If we scroll where there is no more room for the webview to scroll,
+  // by default the webview itself will scroll up and down, this looks really
+  // bad.  So if we are scrolling to the very top or bottom, add/subtract one
+  angular.element(node).on('$md.pressdown', function(ev) {
+    // Only touch events
+    if (ev.pointer.type !== 't') return;
+    // Don't let a child content's touchstart ruin it for us.
+    if (ev.$materialScrollFixed) return;
+    ev.$materialScrollFixed = true;
+
+    if (node.scrollTop === 0) {
+      node.scrollTop = 1;
+    } else if (node.scrollHeight === node.scrollTop + node.offsetHeight) {
+      node.scrollTop -= 1;
+    }
+  });
+}
+})();
+
+/*!
+ * Angular Material Design
+ * https://github.com/angular/material
+ * @license MIT
+ * v0.8.0-rc1
+ */
+(function() {
+'use strict';
+
+/**
+ * @ngdoc module
  * @name material.components.dialog
  */
 angular.module('material.components.dialog', [
@@ -4578,92 +4677,6 @@ MdDialogProvider.$inject = ["$$interimElementProvider"];
 
 /**
  * @ngdoc module
- * @name material.components.content
- *
- * @description
- * Scrollable content
- */
-angular.module('material.components.content', [
-  'material.core'
-])
-  .directive('mdContent', mdContentDirective);
-
-/**
- * @ngdoc directive
- * @name mdContent
- * @module material.components.content
- *
- * @restrict E
- *
- * @description
- * The `<md-content>` directive is a container element useful for scrollable content
- *
- * ### Restrictions
- *
- * - Add the `md-padding` class to make the content padded.
- *
- * @usage
- * <hljs lang="html">
- *  <md-content class="md-padding">
- *      Lorem ipsum dolor sit amet, ne quod novum mei.
- *  </md-content>
- * </hljs>
- *
- */
-
-function mdContentDirective($mdTheming) {
-  return {
-    restrict: 'E',
-    controller: ['$scope', '$element', ContentController],
-    link: function(scope, element, attr) {
-      var node = element[0];
-
-      $mdTheming(element);
-      scope.$broadcast('$mdContentLoaded', element);
-
-      iosScrollFix(element[0]);
-    }
-  };
-
-  function ContentController($scope, $element) {
-    this.$scope = $scope;
-    this.$element = $element;
-  }
-}
-mdContentDirective.$inject = ["$mdTheming"];
-
-function iosScrollFix(node) {
-  // IOS FIX:
-  // If we scroll where there is no more room for the webview to scroll,
-  // by default the webview itself will scroll up and down, this looks really
-  // bad.  So if we are scrolling to the very top or bottom, add/subtract one
-  angular.element(node).on('$md.pressdown', function(ev) {
-    // Only touch events
-    if (ev.pointer.type !== 't') return;
-    // Don't let a child content's touchstart ruin it for us.
-    if (ev.$materialScrollFixed) return;
-    ev.$materialScrollFixed = true;
-
-    if (node.scrollTop === 0) {
-      node.scrollTop = 1;
-    } else if (node.scrollHeight === node.scrollTop + node.offsetHeight) {
-      node.scrollTop -= 1;
-    }
-  });
-}
-})();
-
-/*!
- * Angular Material Design
- * https://github.com/angular/material
- * @license MIT
- * v0.8.0-rc1
- */
-(function() {
-'use strict';
-
-/**
- * @ngdoc module
  * @name material.components.divider
  * @description Divider module!
  */
@@ -4825,7 +4838,7 @@ function GridListDirective($interpolate, $mdConstant, $mdGridLayout, $mdMedia, $
 
     var invalidateLayout = angular.bind(ctrl, ctrl.invalidateLayout),
         unwatchAttrs = watchMedia();
-    scope.$on('$destroy', unwatchMedia());
+    scope.$on('$destroy', unwatchMedia);
 
     /**
      * Watches for changes in media, invalidating layout as necessary.
@@ -4874,15 +4887,20 @@ function GridListDirective($interpolate, $mdConstant, $mdGridLayout, $mdMedia, $
           gutter = getGutter(),
           performance =
               $mdGridLayout(colCount, getTileSpans(), getTileElements())
-                  .map(function(ps, rowCount, i) {
-                    var element = angular.element(tiles[i]);
-                    element.scope().$mdGridPosition = ps; // for debugging
-
+                  .map(function(tilePositions, rowCount) {
                     return {
-                      element: element,
-                      styles: getStyles(ps.position, ps.spans,
-                          colCount, rowCount,
-                          gutter, rowMode, rowHeight)
+                      grid: {
+                        element: element,
+                        style: getGridStyle(colCount, rowCount, gutter, rowMode, rowHeight)
+                      },
+                      tiles: tilePositions.map(function(ps, i) {
+                        return {
+                          element: angular.element(tiles[i]),
+                          style: getTileStyle(ps.position, ps.spans,
+                              colCount, rowCount,
+                              gutter, rowMode, rowHeight)
+                        }
+                      })
                     }
                   })
                   .reflow()
@@ -4894,17 +4912,14 @@ function GridListDirective($interpolate, $mdConstant, $mdGridLayout, $mdMedia, $
           performance: performance
         }
       });
-    };
+    }
 
-    var UNIT = $interpolate(
-        "{{ share }}% - ({{ gutter }} * {{ gutterShare }})");
-    var POSITION = $interpolate(
-        "calc(({{ unit }}) * {{ offset }} + {{ offset }} * {{ gutter }})");
-    var DIMENSION = $interpolate(
-        "calc(({{ unit }}) * {{ span }} + ({{ span }} - 1) * {{ gutter }})");
+    var UNIT      = $interpolate( "{{ share }}% - ({{ gutter }} * {{ gutterShare }})" );
+    var POSITION  = $interpolate( "calc(({{ unit }}) * {{ offset }} + {{ offset }} * {{ gutter }})" );
+    var DIMENSION = $interpolate( "calc(({{ unit }}) * {{ span }} + ({{ span }} - 1) * {{ gutter }})" );
 
     // TODO(shyndman): Replace args with a ctx object.
-    function getStyles(position, spans, colCount, rowCount, gutter, rowMode, rowHeight) {
+    function getTileStyle(position, spans, colCount, rowCount, gutter, rowMode, rowHeight) {
       // TODO(shyndman): There are style caching opportunities here.
       var hShare = (1 / colCount) * 100,
           hGutterShare = colCount === 1 ? 0 : (colCount - 1) / colCount,
@@ -4923,7 +4938,7 @@ function GridListDirective($interpolate, $mdConstant, $mdGridLayout, $mdMedia, $
       switch (rowMode) {
         case 'fixed':
           style.top = POSITION({ unit: rowHeight, offset: position.row, gutter: gutter });
-          style.height = DIMENSION({ unit: rowHeight, span: spans.row, gutter: '0px' });
+          style.height = DIMENSION({ unit: rowHeight, span: spans.row, gutter: gutter });
           break;
 
         case 'ratio':
@@ -4942,6 +4957,35 @@ function GridListDirective($interpolate, $mdConstant, $mdGridLayout, $mdMedia, $
 
           style.top = POSITION({ unit: vUnit, offset: position.row, gutter: gutter });
           style.height = DIMENSION({ unit: vUnit, span: spans.row, gutter: gutter });
+          break;
+      }
+
+      return style;
+    }
+
+    function getGridStyle(colCount, rowCount, gutter, rowMode, rowHeight) {
+      var style = {
+        height: '',
+        paddingBottom: ''
+      };
+
+      switch(rowMode) {
+        case 'fixed':
+          style.height = DIMENSION({ unit: rowHeight, span: rowCount, gutter: gutter });
+          break;
+
+        case 'ratio':
+          // rowHeight is width / height
+          var hGutterShare = colCount === 1 ? 0 : (colCount - 1) / colCount,
+              hShare = (1 / colCount) * 100,
+              vShare = hShare * (1 / rowHeight),
+              vUnit = UNIT({ share: vShare, gutterShare: hGutterShare, gutter: gutter });
+
+          style.paddingBottom = DIMENSION({ unit: vUnit, span: rowCount, gutter: gutter});
+          break;
+
+        case 'fit':
+          // noop, as the height is user set
           break;
       }
 
@@ -4969,7 +5013,11 @@ function GridListDirective($interpolate, $mdConstant, $mdGridLayout, $mdMedia, $
     }
 
     function getColumnCount() {
-      return parseInt($mdMedia.getResponsiveAttribute(attrs, 'md-cols'), 10);
+      var colCount = parseInt($mdMedia.getResponsiveAttribute(attrs, 'md-cols'), 10);
+      if (isNaN(colCount)) {
+        throw 'md-grid-list: md-cols attribute was not found, or contained a non-numeric value';
+      }
+      return colCount;
     }
 
     function getGutter() {
@@ -5007,6 +5055,7 @@ function GridListDirective($interpolate, $mdConstant, $mdGridLayout, $mdMedia, $
 }
 GridListDirective.$inject = ["$interpolate", "$mdConstant", "$mdGridLayout", "$mdMedia", "$mdUtil"];
 
+  /* @ngInject */
 function GridListController($timeout) {
   this.invalidated = false;
   this.$timeout_ = $timeout;
@@ -5034,7 +5083,7 @@ GridListController.prototype = {
     this.invalidateLayout();
   },
 
-  invalidateLayout: function(tile) {
+  invalidateLayout: function() {
     if (this.invalidated) {
       return;
     }
@@ -5049,69 +5098,99 @@ GridListController.prototype = {
       this.invalidated = false;
     }
   }
-};
+}
 
+
+/* @ngInject */
 function GridLayoutFactory($mdUtil) {
-  return function(colCount, tileSpans) {
-    var self, layoutInfo, tiles, layoutTime, mapTime, reflowTime, layoutInfo;
-    layoutTime = $mdUtil.time(function() {
-      layoutInfo = calculateGridFor(colCount, tileSpans);
-    });
+  var defaultAnimator = GridTileAnimator;
 
-    return self = {
-      /**
-       * An array of objects describing each tile's position in the grid.
-       */
-      layoutInfo: function() {
-        return layoutInfo;
-      },
-
-      /**
-       * Maps grid positioning to an element and a set of styles using the
-       * provided updateFn.
-       */
-      map: function(updateFn) {
-        mapTime = $mdUtil.time(function() {
-          tiles = layoutInfo.positioning.map(function(ps, i) {
-            return updateFn(ps, self.layoutInfo().rowCount, i);
-          });
-        });
-        return self;
-      },
-
-      /**
-       * Default animator simply sets the element.css( <styles> ).
-       * Use the $mdGridLayoutProvider to decorate the animator callback if
-       * alternate animation scenarios are desired.
-       */
-      reflow: function(customAnimatorFn) {
-        reflowTime = $mdUtil.time(function() {
-          var animator = customAnimatorFn || defaultAnimator;
-          tiles.forEach(function(it) {
-            animator(it.element, it.styles);
-          });
-        });
-        return self;
-      },
-
-      /**
-       * Timing for the most recent layout run.
-       */
-      performance: function() {
-        return {
-          tileCount: tileSpans.length,
-          layoutTime: layoutTime,
-          mapTime: mapTime,
-          reflowTime: reflowTime,
-          totalTime: layoutTime + mapTime + reflowTime
-        };
-      }
-    };
+  /**
+   * Set the reflow animator callback
+   */
+  GridLayout.animateWith =function(customAnimator) {
+    defaultAnimator = !angular.isFunction(customAnimator) ? GridTileAnimator : customAnimator;
   };
 
-  function defaultAnimator(element, styles) {
-    element.css(styles);
-  };
+  return GridLayout;
+
+  /**
+   * Publish layout function
+   */
+  function GridLayout(colCount, tileSpans) {
+      var self, layoutInfo, gridStyles, layoutTime, mapTime, reflowTime, layoutInfo;
+
+      layoutTime = $mdUtil.time(function() {
+        layoutInfo = calculateGridFor(colCount, tileSpans);
+      });
+
+      return self = {
+
+        /**
+         * An array of objects describing each tile's position in the grid.
+         */
+        layoutInfo: function() {
+          return layoutInfo;
+        },
+
+        /**
+         * Maps grid positioning to an element and a set of styles using the
+         * provided updateFn.
+         */
+        map: function(updateFn) {
+          mapTime = $mdUtil.time(function() {
+            var info = self.layoutInfo();
+            gridStyles = updateFn(info.positioning, info.rowCount);
+          });
+          return self;
+        },
+
+        /**
+         * Default animator simply sets the element.css( <styles> ). An alternate
+         * animator can be provided as an argument. The function has the following
+         * signature:
+         *
+         *    function({grid: {element: JQLite, style: Object}, tiles: Array<{element: JQLite, style: Object}>)
+         */
+        reflow: function(animatorFn) {
+          reflowTime = $mdUtil.time(function() {
+            var animator = animatorFn || defaultAnimator;
+            animator(gridStyles.grid, gridStyles.tiles);
+          });
+          return self;
+        },
+
+        /**
+         * Timing for the most recent layout run.
+         */
+        performance: function() {
+          return {
+            tileCount: tileSpans.length,
+            layoutTime: layoutTime,
+            mapTime: mapTime,
+            reflowTime: reflowTime,
+            totalTime: layoutTime + mapTime + reflowTime
+          };
+        }
+      };
+    }
+
+  /**
+   * Default Gridlist animator simple sets the css for each element;
+   * NOTE: any transitions effects must be manually set in the CSS.
+   * e.g.
+   *
+   *  md-grid-tile {
+   *    transition: all 700ms ease-out 50ms;
+   *  }
+   *
+   */
+  function GridTileAnimator(grid, tiles) {
+    grid.element.css(grid.style);
+    tiles.forEach(function(t) {
+      t.element.css(t.style);
+    })
+  }
 
   /**
    * Calculates the positions of tiles.
@@ -5142,7 +5221,7 @@ function GridLayoutFactory($mdUtil) {
         };
       }),
       rowCount: curRow + Math.max.apply(Math, spaceTracker)
-    };
+    }
 
     function reserveSpace(spans, i) {
       if (spans.col > colCount) {
@@ -5365,7 +5444,7 @@ angular.module('material.components.icon', [
  *  <md-icon md-svg-src="{{ getAndroid() }}" alt="android " ></md-icon>
  * </hljs>
  */
-function mdIconDirective($mdIcon, $mdAria ) {
+function mdIconDirective($mdIcon, $mdTheming, $mdAria ) {
   return {
     scope: {
       fontIcon: '@mdFontIcon',
@@ -5386,6 +5465,8 @@ function mdIconDirective($mdIcon, $mdAria ) {
    * Supports embedded SVGs, font-icons, & external SVGs
    */
   function postLink(scope, element, attr) {
+    $mdTheming(element);
+
     var ariaLabel = attr.alt || scope.fontIcon || scope.svgIcon;
     var attrName = attr.$normalize(attr.$attr.mdSvgIcon || attr.$attr.mdSvgSrc || '');
 
@@ -5422,7 +5503,7 @@ function mdIconDirective($mdIcon, $mdAria ) {
     }
   }
 }
-mdIconDirective.$inject = ["$mdIcon", "$mdAria"];
+mdIconDirective.$inject = ["$mdIcon", "$mdTheming", "$mdAria"];
 
 })();
 
@@ -5635,6 +5716,9 @@ mdIconDirective.$inject = ["$mdIcon", "$mdAria"];
      if ( !config[setName] ) {
        config[setName] = new ConfigurationItem(url, iconSize );
      }
+
+     config[setName].iconSize = iconSize || config.defaultIconSize;
+
      return this;
    },
 
@@ -5701,6 +5785,8 @@ mdIconDirective.$inject = ["$mdIcon", "$mdAria"];
    var iconCache = {};
    var urlRegex = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/i;
 
+   Icon.prototype = { clone : cloneSVG, prepare: prepareAndStyle };
+
    return function getIcon(id) {
      id = id || '';
 
@@ -5713,6 +5799,7 @@ mdIconDirective.$inject = ["$mdIcon", "$mdAria"];
 
      return loadByID(id)
          .catch(loadFromIconSet)
+         .catch(announceIdNotFound)
          .catch(announceNotFound)
          .then( cacheIcon(id) );
    };
@@ -5723,14 +5810,9 @@ mdIconDirective.$inject = ["$mdIcon", "$mdAria"];
    function cacheIcon( id ) {
 
      return function updateCache( icon ) {
-       var iconConfig = config[id];
+       iconCache[id] = isIcon(icon) ? icon : new Icon(icon, config[id]);
 
-       icon = !isIcon(icon) ? new Icon(icon, iconConfig) : icon;
-       icon = prepareAndStyle(icon);
-
-       iconCache[id] = icon;
-
-       return icon.clone();
+       return iconCache[id].clone();
      };
    }
 
@@ -5748,7 +5830,8 @@ mdIconDirective.$inject = ["$mdIcon", "$mdAria"];
    }
 
    /**
-    *
+    *    Loads the file as XML and uses querySelector( <id> ) to find
+    *    the desired node...
     */
    function loadFromIconSet(id) {
      var setName = id.substring(0, id.lastIndexOf(':')) || '$default';
@@ -5761,27 +5844,6 @@ mdIconDirective.$inject = ["$mdIcon", "$mdAria"];
        var icon = set.querySelector('#' + iconName);
        return !icon ? $q.reject(id) : new Icon(icon, iconSetConfig);
      }
-   }
-
-   /**
-    *  Prepare the DOM element that will be cached in the
-    *  loaded iconCache store.
-    */
-   function prepareAndStyle(icon) {
-     var iconSize = icon.config ? icon.config.iconSize : config.defaultIconSize;
-     var svg = angular.element(icon.element);
-
-     return svg.attr({
-       'fit'   : '',
-       'height': '100%',
-       'width' : '100%',
-       'preserveAspectRatio': 'xMidYMid meet',
-       'viewBox' : svg.attr('viewBox') || ('0 0 ' + iconSize + ' ' + iconSize)
-     })
-     .css( {
-       'pointer-events' : 'none',
-       'display' : 'block'
-     });
    }
 
    /**
@@ -5806,12 +5868,26 @@ mdIconDirective.$inject = ["$mdIcon", "$mdAria"];
     * User did not specify a URL and the ID has not been registered with the $mdIcon
     * registry
     */
-   function announceNotFound(id) {
-     var msg = 'icon ' + id + ' not found';
-     $log.warn(msg);
-     throw new Error(msg);
+   function announceIdNotFound(id) {
+     var msg;
+
+     if (angular.isString(id)) {
+       msg = 'icon ' + id + ' not found';
+       $log.warn(msg);
+     }
+
+     return $q.reject(msg || id);
    }
 
+   /**
+    * Catch HTTP or generic errors not related to incorrect icon IDs.
+    */
+   function announceNotFound(err) {
+     var msg = angular.isString(err) ? err : (err.message || err.data || err.statusText);
+     $log.warn(msg);
+
+     return $q.reject(msg);
+   }
 
    /**
     * Check target signature to see if it is an Icon instance.
@@ -5820,7 +5896,6 @@ mdIconDirective.$inject = ["$mdIcon", "$mdAria"];
      return angular.isDefined(target.element) && angular.isDefined(target.config);
    }
 
-
    /**
     *  Define the Icon class
     */
@@ -5828,16 +5903,47 @@ mdIconDirective.$inject = ["$mdIcon", "$mdAria"];
      if (el.tagName != 'svg') {
        el = angular.element('<svg xmlns="http://www.w3.org/2000/svg">').append(el)[0];
      }
+     el = angular.element(el);
+
+     // Inject the namespace if not available...
+     if ( !el.attr('xmlns') ) {
+       el.attr('xmlns', "http://www.w3.org/2000/svg");
+     }
 
      this.element = el;
      this.config = config;
+     this.prepare();
    }
 
-   // Clone the Icon DOM element; which is stored as an angular.element()
+   /**
+    *  Prepare the DOM element that will be cached in the
+    *  loaded iconCache store.
+    */
+   function prepareAndStyle() {
+     var iconSize = this.config ? this.config.iconSize : config.defaultIconSize;
+     var svg = angular.element( this.element );
+         svg.attr({
+           'fit'   : '',
+           'height': '100%',
+           'width' : '100%',
+           'preserveAspectRatio': 'xMidYMid meet',
+           'viewBox' : svg.attr('viewBox') || ('0 0 ' + iconSize + ' ' + iconSize)
+         })
+         .css( {
+           'pointer-events' : 'none',
+           'display' : 'block'
+         });
 
-   Icon.prototype.clone = function (){
-    return this.element.cloneNode(true)[0];
-   };
+     this.element = svg;
+   }
+
+   /**
+    * Clone the Icon DOM element; which is stored as an angular.element()
+    */
+   function cloneSVG(){
+     return angular.element( this.element[0].cloneNode(true) );
+   }
+
  }
 
 })();
@@ -5954,9 +6060,10 @@ function labelDirective() {
  * @module material.components.input
  *
  * @description
- * Use the `<input>` as a child of an `<md-input-container>`.
+ * Use the `<input>` or the  `<textarea>` as a child of an `<md-input-container>`.
  *
- * Behaves like the [AngularJS input directive](https://docs.angularjs.org/api/ng/directive/input).
+ * @param {number=} md-maxlength The maximum number of characters allowed in this input. If this is specified, a character counter will be shown underneath the input.<br/><br/>
+ * The purpose of **`md-maxength`** is exactly to show the max length counter text. If you don't want the counter text and only need "plain" validation, you can use the "simple" `ng-maxlength` or maxlength attributes.
  *
  * @usage
  * <hljs lang="html">
@@ -5977,32 +6084,6 @@ function labelDirective() {
  *       <div ng-message="minlength">That's too short!</div>
  *     </div>
  *   </md-input-container>
- * </form>
- * </hljs>
- *
- * @param {number=} md-maxlength The maximum number of characters allowed in this input. If this is specified, a character counter will be shown underneath the input.
- */
-/**
- * @ngdoc directive
- * @name mdTextarea
- * @restrict E
- * @module material.components.input
- *
- * @description
- * Use the `<textarea>` as a child of an `<md-input-container>`
- *
- * Behaves like the [AngularJS input directive](https://docs.angularjs.org/api/ng/directive/textarea).
- *
- * @usage
- * <hljs lang="html">
- * <md-input-container>
- *   <label>Description</label>
- *   <textarea ng-model="description" required minlength="15" md-maxlength="20"></textarea>
- * </md-input-container>
- * </hljs>
- * <h3>With Errors (uses [ngMessages](https://docs.angularjs.org/api/ngMessages))</h3>
- * <hljs lang="html">
- * <form name="userForm">
  *   <md-input-container>
  *     <label>Biography</label>
  *     <textarea name="bio" ng-model="biography" required md-maxlength="150"></textarea>
@@ -6014,9 +6095,11 @@ function labelDirective() {
  * </form>
  * </hljs>
  *
- * @param {number=} md-maxlength The maximum number of characters allowed in this input. If this is specified, a character counter will be shown underneath the input.
+ * Behaves like the [AngularJS input directive](https://docs.angularjs.org/api/ng/directive/input).
+ *
  */
-function inputTextareaDirective($mdUtil, $window, $compile, $animate) {
+
+function inputTextareaDirective($mdUtil, $window) {
   return {
     restrict: 'E',
     require: ['^?mdInputContainer', '?ngModel'],
@@ -6058,14 +6141,18 @@ function inputTextareaDirective($mdUtil, $window, $compile, $animate) {
       element
         .on('focus', function(ev) {
           containerCtrl.setFocused(true);
+
+          // Error text should not appear before user interaction with the field.
+          // So we need to check on focus also
+          ngModelCtrl.$setTouched();
+          if ( isErrorGetter() ) containerCtrl.setInvalid(true);
+
         })
         .on('blur', function(ev) {
           containerCtrl.setFocused(false);
           inputCheckValue();
         });
 
-      ngModelCtrl.$setTouched();
-      if( ngModelCtrl.$invalid ) containerCtrl.setInvalid();
     }
 
     scope.$on('$destroy', function() {
@@ -6128,7 +6215,7 @@ function inputTextareaDirective($mdUtil, $window, $compile, $animate) {
     }
   }
 }
-inputTextareaDirective.$inject = ["$mdUtil", "$window", "$compile", "$animate"];
+inputTextareaDirective.$inject = ["$mdUtil", "$window"];
 
 function mdMaxlengthDirective($animate) {
   return {
@@ -9094,8 +9181,10 @@ angular.module('material.components.whiteframe', []);
     self.hidden   = true;
     self.index    = 0;
     self.keydown  = keydown;
+    self.blur     = blur;
     self.clear    = clearValue;
     self.select   = select;
+    self.getCurrentDisplayValue = getCurrentDisplayValue;
     self.fetch    = $mdUtil.debounce(fetchResults);
 
     //-- return init
@@ -9129,7 +9218,6 @@ angular.module('material.components.whiteframe', []);
         if (cache[term]) {
           self.matches = cache[term];
         } else if (!self.hidden) {
-          self.loading = true;
           self.fetch(searchText);
         }
       });
@@ -9138,13 +9226,23 @@ angular.module('material.components.whiteframe', []);
     function fetchResults (searchText) {
       var items = $scope.$parent.$eval(itemExpr),
           term = searchText.toLowerCase();
-      promise = $q.when(items).then(function (matches) {
+      if (angular.isArray(items)) {
+        handleResults(items);
+      } else {
+        self.loading = true;
+        promise = $q.when(items).then(handleResults);
+      }
+      function handleResults (matches) {
         cache[term] = matches;
         if (searchText !== $scope.searchText) return; //-- just cache the results if old request
         promise = null;
         self.loading = false;
         self.matches = matches;
-      });
+      }
+    }
+
+    function blur (event) {
+      self.hidden = true;
     }
 
     function keydown (event) {
@@ -9171,9 +9269,11 @@ angular.module('material.components.whiteframe', []);
           self.hidden = true;
           self.index = -1;
           break;
+        case $mdConstant.KEY_CODE.TAB:
+          break;
         default:
           self.index = -1;
-          self.hidden = false;
+          self.hidden = isHidden();
           //-- after value updates, check if list should be hidden
           $timeout(function () { self.hidden = isHidden(); });
       }
@@ -9182,10 +9282,15 @@ angular.module('material.components.whiteframe', []);
     function clearValue () {
       $scope.searchText = '';
       select(-1);
+      elements.input.focus();
     }
 
     function isHidden () {
       return self.matches.length === 1 && $scope.searchText === getDisplayValue(self.matches[0]);
+    }
+
+    function getCurrentDisplayValue () {
+      return getDisplayValue(self.matches[self.index]);
     }
 
     function getDisplayValue (item) {
@@ -9261,6 +9366,7 @@ angular.module('material.components.whiteframe', []);
           <input type="text"\
               ng-model="searchText"\
               ng-keydown="$mdAutocompleteCtrl.keydown($event)"\
+              ng-blur="$mdAutocompleteCtrl.blur($event)"\
               placeholder="{{placeholder}}"\
               aria-label="{{placeholder}}"\
               aria-autocomplete="list"\
@@ -9271,7 +9377,7 @@ angular.module('material.components.whiteframe', []);
               type="button"\
               ng-if="searchText"\
               ng-click="$mdAutocompleteCtrl.clear()">\
-              <span aria-hidden="true">X</span>\
+              <md-icon md-svg-icon="cancel"></md-icon>\
               <span class="visually-hidden">Clear</span>\
               </button>\
           <md-progress-linear ng-if="$mdAutocompleteCtrl.loading" md-mode="indeterminate"></md-progress-linear>\
@@ -9287,10 +9393,11 @@ angular.module('material.components.whiteframe', []);
         </ul>\
         <aria-status\
             class="visually-hidden"\
-            aria-atomic="true"\
             role="status"\
-            aria-live="polite">\
-          <p ng-repeat="item in $mdAutocompleteCtrl.matches">{{item.display}}</p>\
+            aria-live="assertive">\
+          <p ng-if="$mdAutocompleteCtrl.index === -1 && $mdAutocompleteCtrl.matches.length === 1">There is 1 match available.</p>\
+          <p ng-if="$mdAutocompleteCtrl.index === -1 && $mdAutocompleteCtrl.matches.length > 1">There are {{$mdAutocompleteCtrl.matches.length}} matches available.</p>\
+          <p ng-if="$mdAutocompleteCtrl.index >= 0">{{ $mdAutocompleteCtrl.getCurrentDisplayValue() }}</p>\
         </aria-status>',
       transclude: true,
       controller: 'MdAutocompleteCtrl',
@@ -10418,4 +10525,4 @@ function TabsDirective($mdTheming) {
 TabsDirective.$inject = ["$mdTheming"];
 })();
 
-angular.module("material.core").constant("$MD_THEME_CSS", "md-autocomplete {  background: '{{background-50}}'; }  md-autocomplete button {    background: '{{background-200}}'; }  md-autocomplete ul {    background: '{{background-50}}'; }    md-autocomplete ul li {      border-top: 1px solid '{{background-400}}';      color: '{{background-900}}'; }      md-autocomplete ul li .highlight {        color: '{{background-600}}'; }      md-autocomplete ul li:hover, md-autocomplete ul li.selected {        background: '{{background-200}}'; }md-backdrop.md-opaque.md-THEME_NAME-theme {  background-color: '{{foreground-4-0.5}}'; }md-bottom-sheet.md-THEME_NAME-theme {  background-color: '{{background-50}}';  border-top-color: '{{background-300}}'; }  md-bottom-sheet.md-THEME_NAME-theme.md-list md-item {    color: '{{foreground-1}}'; }  md-bottom-sheet.md-THEME_NAME-theme .md-subheader {    background-color: '{{background-50}}'; }  md-bottom-sheet.md-THEME_NAME-theme .md-subheader {    color: '{{foreground-1}}'; }md-toolbar .md-button.md-THEME_NAME-theme.md-fab {  background-color: white; }.md-button.md-THEME_NAME-theme {  border-radius: 3px; }  .md-button.md-THEME_NAME-theme:not([disabled]):hover, .md-button.md-THEME_NAME-theme:not([disabled]):focus {    background-color: '{{background-500-0.2}}'; }  .md-button.md-THEME_NAME-theme.md-primary {    color: '{{primary-color}}'; }    .md-button.md-THEME_NAME-theme.md-primary.md-raised, .md-button.md-THEME_NAME-theme.md-primary.md-fab {      color: '{{primary-contrast}}';      background-color: '{{primary-color}}'; }      .md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]):focus, .md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]):focus {        background-color: '{{primary-600}}'; }  .md-button.md-THEME_NAME-theme.md-fab {    border-radius: 50%;    background-color: '{{accent-color}}';    color: '{{accent-contrast}}'; }    .md-button.md-THEME_NAME-theme.md-fab:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-fab:not([disabled]):focus {      background-color: '{{accent-A700}}'; }  .md-button.md-THEME_NAME-theme.md-raised {    color: '{{background-contrast}}';    background-color: '{{background-50}}'; }    .md-button.md-THEME_NAME-theme.md-raised:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-raised:not([disabled]):focus {      background-color: '{{background-200}}'; }  .md-button.md-THEME_NAME-theme.md-warn {    color: '{{warn-color}}'; }    .md-button.md-THEME_NAME-theme.md-warn.md-raised, .md-button.md-THEME_NAME-theme.md-warn.md-fab {      color: '{{warn-contrast}}';      background-color: '{{warn-color}}'; }      .md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]):focus, .md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]):focus {        background-color: '{{warn-700}}'; }  .md-button.md-THEME_NAME-theme.md-accent {    color: '{{accent-color}}'; }    .md-button.md-THEME_NAME-theme.md-accent.md-raised, .md-button.md-THEME_NAME-theme.md-accent.md-fab {      color: '{{accent-contrast}}';      background-color: '{{accent-color}}'; }      .md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]):focus, .md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]):focus {        background-color: '{{accent-700}}'; }  .md-button.md-THEME_NAME-theme[disabled], .md-button.md-THEME_NAME-theme.md-raised[disabled], .md-button.md-THEME_NAME-theme.md-fab[disabled] {    color: '{{foreground-3}}';    background-color: transparent;    cursor: not-allowed; }md-card.md-THEME_NAME-theme {  border-radius: 2px; }  md-card.md-THEME_NAME-theme .md-card-image {    border-radius: 2px 2px 0 0; }md-checkbox.md-THEME_NAME-theme .md-ripple {  color: '{{accent-600}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-ripple {  color: '{{background-600}}'; }md-checkbox.md-THEME_NAME-theme .md-icon {  border-color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-icon {  background-color: '{{accent-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-icon:after {  border-color: '{{background-200}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-ripple {  color: '{{primary-600}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ripple {  color: '{{background-600}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-icon {  border-color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-icon {  background-color: '{{primary-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-icon:after {  border-color: '{{background-200}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn .md-ripple {  color: '{{warn-600}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn .md-icon {  border-color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-icon {  background-color: '{{warn-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-icon:after {  border-color: '{{background-200}}'; }md-checkbox.md-THEME_NAME-theme[disabled] .md-icon {  border-color: '{{foreground-3}}'; }md-checkbox.md-THEME_NAME-theme[disabled].md-checked .md-icon {  background-color: '{{foreground-3}}'; }md-dialog.md-THEME_NAME-theme {  border-radius: 4px;  background-color: '{{background-hue-3}}'; }  md-dialog.md-THEME_NAME-theme.md-content-overflow .md-actions {    border-top-color: '{{foreground-4}}'; }md-content.md-THEME_NAME-theme {  background-color: '{{background-hue-3}}'; }md-divider.md-THEME_NAME-theme {  border-top-color: '{{foreground-4}}'; }md-input-container.md-THEME_NAME-theme .md-input {  color: '{{foreground-1}}';  border-color: '{{foreground-4}}';  text-shadow: '{{foreground-shadow}}'; }  md-input-container.md-THEME_NAME-theme .md-input::-webkit-input-placeholder, md-input-container.md-THEME_NAME-theme .md-input::-moz-placeholder, md-input-container.md-THEME_NAME-theme .md-input:-moz-placeholder, md-input-container.md-THEME_NAME-theme .md-input:-ms-input-placeholder {    color: '{{foreground-3}}'; }md-input-container.md-THEME_NAME-theme label, md-input-container.md-THEME_NAME-theme .md-placeholder {  text-shadow: '{{foreground-shadow}}';  color: '{{foreground-3}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-has-value label {  color: '{{foreground-2}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused .md-input {  border-color: '{{primary-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused label {  color: '{{primary-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-accent .md-input {  border-color: '{{accent-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-accent label {  color: '{{accent-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-warn .md-input {  border-color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-warn label {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme.md-input-invalid .md-input {  border-color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme.md-input-invalid label {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme.md-input-invalid ng-message, md-input-container.md-THEME_NAME-theme.md-input-invalid data-ng-message, md-input-container.md-THEME_NAME-theme.md-input-invalid x-ng-message, md-input-container.md-THEME_NAME-theme.md-input-invalid [ng-message], md-input-container.md-THEME_NAME-theme.md-input-invalid [data-ng-message], md-input-container.md-THEME_NAME-theme.md-input-invalid [x-ng-message], md-input-container.md-THEME_NAME-theme.md-input-invalid .md-char-counter {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme .md-input[disabled], [disabled] md-input-container.md-THEME_NAME-theme .md-input {  border-bottom-color: transparent;  color: '{{foreground-3}}';  background-image: linear-gradient(to right, '{{foreground-4}}' 0%, '{{foreground-4}}' 33%, transparent 0%);  background-image: -ms-linear-gradient(left, transparent 0%, '{{foreground-4}}' 100%); }md-progress-circular.md-THEME_NAME-theme {  background-color: transparent; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-gap {    border-top-color: '{{primary-color}}';    border-bottom-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-left .md-half-circle, md-progress-circular.md-THEME_NAME-theme .md-inner .md-right .md-half-circle {    border-top-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-right .md-half-circle {    border-right-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-left .md-half-circle {    border-left-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-gap {    border-top-color: '{{warn-color}}';    border-bottom-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-left .md-half-circle, md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-right .md-half-circle {    border-top-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-right .md-half-circle {    border-right-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-left .md-half-circle {    border-left-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-gap {    border-top-color: '{{accent-color}}';    border-bottom-color: '{{accent-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-left .md-half-circle, md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-right .md-half-circle {    border-top-color: '{{accent-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-right .md-half-circle {    border-right-color: '{{accent-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-left .md-half-circle {    border-left-color: '{{accent-color}}'; }md-progress-linear.md-THEME_NAME-theme .md-container {  background-color: '{{primary-100}}'; }md-progress-linear.md-THEME_NAME-theme .md-bar {  background-color: '{{primary-color}}'; }md-progress-linear.md-THEME_NAME-theme.md-warn .md-container {  background-color: '{{warn-100}}'; }md-progress-linear.md-THEME_NAME-theme.md-warn .md-bar {  background-color: '{{warn-color}}'; }md-progress-linear.md-THEME_NAME-theme.md-accent .md-container {  background-color: '{{accent-100}}'; }md-progress-linear.md-THEME_NAME-theme.md-accent .md-bar {  background-color: '{{accent-color}}'; }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-warn .md-bar1 {  background-color: '{{warn-100}}'; }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-warn .md-dashed:before {  background: radial-gradient('{{warn-100}}' 0%, '{{warn-100}}' 16%, transparent 42%); }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-accent .md-bar1 {  background-color: '{{accent-100}}'; }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-accent .md-dashed:before {  background: radial-gradient('{{accent-100}}' 0%, '{{accent-100}}' 16%, transparent 42%); }md-radio-button.md-THEME_NAME-theme .md-off {  border-color: '{{foreground-2}}'; }md-radio-button.md-THEME_NAME-theme .md-on {  background-color: '{{accent-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme.md-checked .md-off {  border-color: '{{accent-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme.md-checked .md-ink-ripple {  color: '{{accent-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme .md-container .md-ripple {  color: '{{accent-600}}'; }md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-on {  background-color: '{{primary-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-off {  border-color: '{{primary-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ink-ripple {  color: '{{primary-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-container .md-ripple {  color: '{{primary-600}}'; }md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-on {  background-color: '{{warn-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-off {  border-color: '{{warn-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-ink-ripple {  color: '{{warn-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-container .md-ripple {  color: '{{warn-600}}'; }md-radio-button.md-THEME_NAME-theme[disabled] .md-container .md-off {  border-color: '{{foreground-3}}'; }md-radio-button.md-THEME_NAME-theme[disabled] .md-container .md-on {  border-color: '{{foreground-3}}'; }md-radio-group.md-THEME_NAME-theme:focus:not(:empty) {  border-color: '{{foreground-1}}'; }md-sidenav.md-THEME_NAME-theme {  background-color: '{{background-hue-3}}'; }md-slider.md-THEME_NAME-theme .md-track {  background-color: '{{foreground-3}}'; }md-slider.md-THEME_NAME-theme .md-track-ticks {  background-color: '{{foreground-4}}'; }md-slider.md-THEME_NAME-theme .md-focus-thumb {  background-color: '{{foreground-2}}'; }md-slider.md-THEME_NAME-theme .md-focus-ring {  border-color: '{{foreground-4}}'; }md-slider.md-THEME_NAME-theme .md-disabled-thumb {  border-color: '{{background-hue-3}}'; }md-slider.md-THEME_NAME-theme.md-min .md-thumb:after {  background-color: '{{background-hue-3}}'; }md-slider.md-THEME_NAME-theme .md-track.md-track-fill {  background-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-thumb:after {  border-color: '{{accent-color}}';  background-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-sign {  background-color: '{{accent-color}}'; }  md-slider.md-THEME_NAME-theme .md-sign:after {    border-top-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-thumb-text {  color: '{{accent-contrast}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-track.md-track-fill {  background-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-thumb:after {  border-color: '{{warn-color}}';  background-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-sign {  background-color: '{{warn-color}}'; }  md-slider.md-THEME_NAME-theme.md-warn .md-sign:after {    border-top-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-thumb-text {  color: '{{warn-contrast}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-track.md-track-fill {  background-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-thumb:after {  border-color: '{{primary-color}}';  background-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-sign {  background-color: '{{primary-color}}'; }  md-slider.md-THEME_NAME-theme.md-primary .md-sign:after {    border-top-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-thumb-text {  color: '{{primary-contrast}}'; }md-slider.md-THEME_NAME-theme[disabled] .md-thumb:after {  border-color: '{{foreground-3}}'; }md-slider.md-THEME_NAME-theme[disabled]:not(.md-min) .md-thumb:after {  background-color: '{{foreground-3}}'; }.md-subheader.md-THEME_NAME-theme {  color: '{{ foreground-2-0.23 }}';  background-color: '{{background-hue-3}}'; }  .md-subheader.md-THEME_NAME-theme.md-primary {    color: '{{primary-color}}'; }  .md-subheader.md-THEME_NAME-theme.md-accent {    color: '{{accent-color}}'; }  .md-subheader.md-THEME_NAME-theme.md-warn {    color: '{{warn-color}}'; }md-switch.md-THEME_NAME-theme .md-thumb {  background-color: '{{background-50}}'; }md-switch.md-THEME_NAME-theme .md-bar {  background-color: '{{background-500}}'; }md-switch.md-THEME_NAME-theme.md-checked .md-thumb {  background-color: '{{accent-color}}'; }md-switch.md-THEME_NAME-theme.md-checked .md-bar {  background-color: '{{accent-color-0.5}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-primary .md-thumb {  background-color: '{{primary-color}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-primary .md-bar {  background-color: '{{primary-color-0.5}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-warn .md-thumb {  background-color: '{{warn-color}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-warn .md-bar {  background-color: '{{warn-color-0.5}}'; }md-switch.md-THEME_NAME-theme[disabled] .md-thumb {  background-color: '{{background-400}}'; }md-switch.md-THEME_NAME-theme[disabled] .md-bar {  background-color: '{{foreground-4}}'; }md-switch.md-THEME_NAME-theme:focus .md-label:not(:empty) {  border-color: '{{foreground-1}}';  border-style: dotted; }md-tabs.md-THEME_NAME-theme .md-header {  background-color: transparent; }md-tabs.md-THEME_NAME-theme .md-paginator md-icon {  color: '{{primary-color}}'; }md-tabs.md-THEME_NAME-theme.md-accent .md-header {  background-color: '{{accent-color}}'; }md-tabs.md-THEME_NAME-theme.md-accent md-tab:not([disabled]) {  color: '{{accent-100}}'; }  md-tabs.md-THEME_NAME-theme.md-accent md-tab:not([disabled]).active {    color: '{{accent-contrast}}'; }md-tabs.md-THEME_NAME-theme.md-primary .md-header {  background-color: '{{primary-color}}'; }md-tabs.md-THEME_NAME-theme.md-primary md-tab:not([disabled]) {  color: '{{primary-100}}'; }  md-tabs.md-THEME_NAME-theme.md-primary md-tab:not([disabled]).active {    color: '{{primary-contrast}}'; }md-tabs.md-THEME_NAME-theme.md-primary md-tab {  color: '{{primary-100}}'; }  md-tabs.md-THEME_NAME-theme.md-primary md-tab[disabled] {    color: '{{foreground-3}}'; }  md-tabs.md-THEME_NAME-theme.md-primary md-tab:focus {    color: '{{primary-contrast}}';    background-color: '{{primary-contrast-0.1}}'; }  md-tabs.md-THEME_NAME-theme.md-primary md-tab.active {    color: '{{primary-contrast}}'; }  md-tabs.md-THEME_NAME-theme.md-primary md-tab .md-ripple-container {    color: '{{primary-contrast}}'; }md-tabs.md-THEME_NAME-theme.md-warn .md-header {  background-color: '{{warn-color}}'; }md-tabs.md-THEME_NAME-theme.md-warn md-tab:not([disabled]) {  color: '{{warn-100}}'; }  md-tabs.md-THEME_NAME-theme.md-warn md-tab:not([disabled]).active {    color: '{{warn-contrast}}'; }md-tabs.md-THEME_NAME-theme md-tabs-ink-bar {  color: '{{accent-color}}';  background: '{{accent-color}}'; }md-tabs.md-THEME_NAME-theme md-tab {  color: '{{foreground-2}}'; }  md-tabs.md-THEME_NAME-theme md-tab[disabled] {    color: '{{foreground-3}}'; }  md-tabs.md-THEME_NAME-theme md-tab:focus {    color: '{{foreground-1}}'; }  md-tabs.md-THEME_NAME-theme md-tab.active {    color: '{{primary-color}}'; }  md-tabs.md-THEME_NAME-theme md-tab .md-ripple-container {    color: '{{accent-100}}'; }md-input-group.md-THEME_NAME-theme input, md-input-group.md-THEME_NAME-theme textarea {  text-shadow: '{{foreground-shadow}}'; }  md-input-group.md-THEME_NAME-theme input::-webkit-input-placeholder, md-input-group.md-THEME_NAME-theme input::-moz-placeholder, md-input-group.md-THEME_NAME-theme input:-moz-placeholder, md-input-group.md-THEME_NAME-theme input:-ms-input-placeholder, md-input-group.md-THEME_NAME-theme textarea::-webkit-input-placeholder, md-input-group.md-THEME_NAME-theme textarea::-moz-placeholder, md-input-group.md-THEME_NAME-theme textarea:-moz-placeholder, md-input-group.md-THEME_NAME-theme textarea:-ms-input-placeholder {    color: '{{foreground-3}}'; }md-input-group.md-THEME_NAME-theme label {  text-shadow: '{{foreground-shadow}}';  color: '{{foreground-3}}'; }md-input-group.md-THEME_NAME-theme input, md-input-group.md-THEME_NAME-theme textarea {  color: '{{foreground-1}}';  border-color: '{{foreground-4}}'; }md-input-group.md-THEME_NAME-theme.md-input-focused input, md-input-group.md-THEME_NAME-theme.md-input-focused textarea {  border-color: '{{primary-500}}'; }md-input-group.md-THEME_NAME-theme.md-input-focused label {  color: '{{primary-500}}'; }md-input-group.md-THEME_NAME-theme.md-input-focused.md-accent input, md-input-group.md-THEME_NAME-theme.md-input-focused.md-accent textarea {  border-color: '{{accent-500}}'; }md-input-group.md-THEME_NAME-theme.md-input-focused.md-accent label {  color: '{{accent-500}}'; }md-input-group.md-THEME_NAME-theme.md-input-has-value:not(.md-input-focused) label {  color: '{{foreground-2}}'; }md-input-group.md-THEME_NAME-theme .md-input[disabled] {  border-bottom-color: '{{foreground-4}}';  color: '{{foreground-3}}'; }md-toast.md-THEME_NAME-theme {  background-color: '{{foreground-1}}';  color: '{{background-50}}'; }  md-toast.md-THEME_NAME-theme .md-button {    color: '{{background-50}}'; }    md-toast.md-THEME_NAME-theme .md-button.md-highlight {      color: '{{primary-A200}}'; }      md-toast.md-THEME_NAME-theme .md-button.md-highlight.md-accent {        color: '{{accent-A200}}'; }      md-toast.md-THEME_NAME-theme .md-button.md-highlight.md-warn {        color: '{{warn-A200}}'; }md-toolbar.md-THEME_NAME-theme {  background-color: '{{primary-color}}';  color: '{{primary-contrast}}'; }  md-toolbar.md-THEME_NAME-theme .md-button {    color: '{{primary-contrast}}'; }  md-toolbar.md-THEME_NAME-theme.md-accent {    background-color: '{{accent-color}}';    color: '{{accent-contrast}}'; }  md-toolbar.md-THEME_NAME-theme.md-warn {    background-color: '{{warn-color}}';    color: '{{warn-contrast}}'; }md-tooltip.md-THEME_NAME-theme {  color: '{{background-A100}}'; }  md-tooltip.md-THEME_NAME-theme .md-background {    background-color: '{{foreground-2}}'; }");
+angular.module("material.core").constant("$MD_THEME_CSS", "md-autocomplete {  background: '{{background-50}}'; }  md-autocomplete button md-icon path {    fill: '{{background-600}}'; }  md-autocomplete button:after {    background: '{{background-600-0.3}}'; }  md-autocomplete ul {    background: '{{background-50}}'; }    md-autocomplete ul li {      border-top: 1px solid '{{background-400}}';      color: '{{background-900}}'; }      md-autocomplete ul li .highlight {        color: '{{background-600}}'; }      md-autocomplete ul li:hover, md-autocomplete ul li.selected {        background: '{{background-200}}'; }md-backdrop.md-opaque.md-THEME_NAME-theme {  background-color: '{{foreground-4-0.5}}'; }md-bottom-sheet.md-THEME_NAME-theme {  background-color: '{{background-50}}';  border-top-color: '{{background-300}}'; }  md-bottom-sheet.md-THEME_NAME-theme.md-list md-item {    color: '{{foreground-1}}'; }  md-bottom-sheet.md-THEME_NAME-theme .md-subheader {    background-color: '{{background-50}}'; }  md-bottom-sheet.md-THEME_NAME-theme .md-subheader {    color: '{{foreground-1}}'; }md-toolbar .md-button.md-THEME_NAME-theme.md-fab {  background-color: white; }.md-button.md-THEME_NAME-theme {  border-radius: 3px; }  .md-button.md-THEME_NAME-theme:not([disabled]):hover, .md-button.md-THEME_NAME-theme:not([disabled]):focus {    background-color: '{{background-500-0.2}}'; }  .md-button.md-THEME_NAME-theme.md-primary {    color: '{{primary-color}}'; }    .md-button.md-THEME_NAME-theme.md-primary.md-raised, .md-button.md-THEME_NAME-theme.md-primary.md-fab {      color: '{{primary-contrast}}';      background-color: '{{primary-color}}'; }      .md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]):focus, .md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]):focus {        background-color: '{{primary-600}}'; }  .md-button.md-THEME_NAME-theme.md-fab {    border-radius: 50%;    background-color: '{{accent-color}}';    color: '{{accent-contrast}}'; }    .md-button.md-THEME_NAME-theme.md-fab:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-fab:not([disabled]):focus {      background-color: '{{accent-A700}}'; }  .md-button.md-THEME_NAME-theme.md-raised {    color: '{{background-contrast}}';    background-color: '{{background-50}}'; }    .md-button.md-THEME_NAME-theme.md-raised:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-raised:not([disabled]):focus {      background-color: '{{background-200}}'; }  .md-button.md-THEME_NAME-theme.md-warn {    color: '{{warn-color}}'; }    .md-button.md-THEME_NAME-theme.md-warn.md-raised, .md-button.md-THEME_NAME-theme.md-warn.md-fab {      color: '{{warn-contrast}}';      background-color: '{{warn-color}}'; }      .md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]):focus, .md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]):focus {        background-color: '{{warn-700}}'; }  .md-button.md-THEME_NAME-theme.md-accent {    color: '{{accent-color}}'; }    .md-button.md-THEME_NAME-theme.md-accent.md-raised, .md-button.md-THEME_NAME-theme.md-accent.md-fab {      color: '{{accent-contrast}}';      background-color: '{{accent-color}}'; }      .md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]):focus, .md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]):focus {        background-color: '{{accent-700}}'; }  .md-button.md-THEME_NAME-theme[disabled], .md-button.md-THEME_NAME-theme.md-raised[disabled], .md-button.md-THEME_NAME-theme.md-fab[disabled] {    color: '{{foreground-3}}';    background-color: transparent;    cursor: not-allowed; }md-card.md-THEME_NAME-theme {  border-radius: 2px; }  md-card.md-THEME_NAME-theme .md-card-image {    border-radius: 2px 2px 0 0; }md-checkbox.md-THEME_NAME-theme .md-ripple {  color: '{{accent-600}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-ripple {  color: '{{background-600}}'; }md-checkbox.md-THEME_NAME-theme .md-icon {  border-color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-icon {  background-color: '{{accent-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-icon:after {  border-color: '{{background-200}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-ripple {  color: '{{primary-600}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ripple {  color: '{{background-600}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-icon {  border-color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-icon {  background-color: '{{primary-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-icon:after {  border-color: '{{background-200}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn .md-ripple {  color: '{{warn-600}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn .md-icon {  border-color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-icon {  background-color: '{{warn-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-icon:after {  border-color: '{{background-200}}'; }md-checkbox.md-THEME_NAME-theme[disabled] .md-icon {  border-color: '{{foreground-3}}'; }md-checkbox.md-THEME_NAME-theme[disabled].md-checked .md-icon {  background-color: '{{foreground-3}}'; }md-content.md-THEME_NAME-theme {  background-color: '{{background-hue-3}}'; }md-dialog.md-THEME_NAME-theme {  border-radius: 4px;  background-color: '{{background-hue-3}}'; }  md-dialog.md-THEME_NAME-theme.md-content-overflow .md-actions {    border-top-color: '{{foreground-4}}'; }md-divider.md-THEME_NAME-theme {  border-top-color: '{{foreground-4}}'; }md-icon.md-THEME_NAME-theme.md-primary {  color: '{{primary-color}}'; }md-icon.md-THEME_NAME-theme.md-accent {  color: '{{accent-color}}'; }md-icon.md-THEME_NAME-theme.md-warn {  color: '{{warn-color}}'; }md-icon.md-THEME_NAME-theme.md-danger {  color: '{{danger-color}}'; }md-input-container.md-THEME_NAME-theme .md-input {  color: '{{foreground-1}}';  border-color: '{{foreground-4}}';  text-shadow: '{{foreground-shadow}}'; }  md-input-container.md-THEME_NAME-theme .md-input::-webkit-input-placeholder, md-input-container.md-THEME_NAME-theme .md-input::-moz-placeholder, md-input-container.md-THEME_NAME-theme .md-input:-moz-placeholder, md-input-container.md-THEME_NAME-theme .md-input:-ms-input-placeholder {    color: '{{foreground-3}}'; }md-input-container.md-THEME_NAME-theme label, md-input-container.md-THEME_NAME-theme .md-placeholder {  text-shadow: '{{foreground-shadow}}';  color: '{{foreground-3}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-has-value label {  color: '{{foreground-2}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused .md-input {  border-color: '{{primary-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused label {  color: '{{primary-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-accent .md-input {  border-color: '{{accent-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-accent label {  color: '{{accent-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-warn .md-input {  border-color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-warn label {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme.md-input-invalid .md-input {  border-color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme.md-input-invalid label {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme.md-input-invalid ng-message, md-input-container.md-THEME_NAME-theme.md-input-invalid data-ng-message, md-input-container.md-THEME_NAME-theme.md-input-invalid x-ng-message, md-input-container.md-THEME_NAME-theme.md-input-invalid [ng-message], md-input-container.md-THEME_NAME-theme.md-input-invalid [data-ng-message], md-input-container.md-THEME_NAME-theme.md-input-invalid [x-ng-message], md-input-container.md-THEME_NAME-theme.md-input-invalid .md-char-counter {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme .md-input[disabled], [disabled] md-input-container.md-THEME_NAME-theme .md-input {  border-bottom-color: transparent;  color: '{{foreground-3}}';  background-image: linear-gradient(to right, '{{foreground-4}}' 0%, '{{foreground-4}}' 33%, transparent 0%);  background-image: -ms-linear-gradient(left, transparent 0%, '{{foreground-4}}' 100%); }md-progress-circular.md-THEME_NAME-theme {  background-color: transparent; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-gap {    border-top-color: '{{primary-color}}';    border-bottom-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-left .md-half-circle, md-progress-circular.md-THEME_NAME-theme .md-inner .md-right .md-half-circle {    border-top-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-right .md-half-circle {    border-right-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-left .md-half-circle {    border-left-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-gap {    border-top-color: '{{warn-color}}';    border-bottom-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-left .md-half-circle, md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-right .md-half-circle {    border-top-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-right .md-half-circle {    border-right-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-left .md-half-circle {    border-left-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-gap {    border-top-color: '{{accent-color}}';    border-bottom-color: '{{accent-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-left .md-half-circle, md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-right .md-half-circle {    border-top-color: '{{accent-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-right .md-half-circle {    border-right-color: '{{accent-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-left .md-half-circle {    border-left-color: '{{accent-color}}'; }md-progress-linear.md-THEME_NAME-theme .md-container {  background-color: '{{primary-100}}'; }md-progress-linear.md-THEME_NAME-theme .md-bar {  background-color: '{{primary-color}}'; }md-progress-linear.md-THEME_NAME-theme.md-warn .md-container {  background-color: '{{warn-100}}'; }md-progress-linear.md-THEME_NAME-theme.md-warn .md-bar {  background-color: '{{warn-color}}'; }md-progress-linear.md-THEME_NAME-theme.md-accent .md-container {  background-color: '{{accent-100}}'; }md-progress-linear.md-THEME_NAME-theme.md-accent .md-bar {  background-color: '{{accent-color}}'; }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-warn .md-bar1 {  background-color: '{{warn-100}}'; }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-warn .md-dashed:before {  background: radial-gradient('{{warn-100}}' 0%, '{{warn-100}}' 16%, transparent 42%); }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-accent .md-bar1 {  background-color: '{{accent-100}}'; }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-accent .md-dashed:before {  background: radial-gradient('{{accent-100}}' 0%, '{{accent-100}}' 16%, transparent 42%); }md-radio-button.md-THEME_NAME-theme .md-off {  border-color: '{{foreground-2}}'; }md-radio-button.md-THEME_NAME-theme .md-on {  background-color: '{{accent-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme.md-checked .md-off {  border-color: '{{accent-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme.md-checked .md-ink-ripple {  color: '{{accent-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme .md-container .md-ripple {  color: '{{accent-600}}'; }md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-on {  background-color: '{{primary-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-off {  border-color: '{{primary-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ink-ripple {  color: '{{primary-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-container .md-ripple {  color: '{{primary-600}}'; }md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-on {  background-color: '{{warn-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-off {  border-color: '{{warn-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-ink-ripple {  color: '{{warn-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-container .md-ripple {  color: '{{warn-600}}'; }md-radio-button.md-THEME_NAME-theme[disabled] .md-container .md-off {  border-color: '{{foreground-3}}'; }md-radio-button.md-THEME_NAME-theme[disabled] .md-container .md-on {  border-color: '{{foreground-3}}'; }md-radio-group.md-THEME_NAME-theme:focus:not(:empty) {  border-color: '{{foreground-1}}'; }md-sidenav.md-THEME_NAME-theme {  background-color: '{{background-hue-3}}'; }md-slider.md-THEME_NAME-theme .md-track {  background-color: '{{foreground-3}}'; }md-slider.md-THEME_NAME-theme .md-track-ticks {  background-color: '{{foreground-4}}'; }md-slider.md-THEME_NAME-theme .md-focus-thumb {  background-color: '{{foreground-2}}'; }md-slider.md-THEME_NAME-theme .md-focus-ring {  border-color: '{{foreground-4}}'; }md-slider.md-THEME_NAME-theme .md-disabled-thumb {  border-color: '{{background-hue-3}}'; }md-slider.md-THEME_NAME-theme.md-min .md-thumb:after {  background-color: '{{background-hue-3}}'; }md-slider.md-THEME_NAME-theme .md-track.md-track-fill {  background-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-thumb:after {  border-color: '{{accent-color}}';  background-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-sign {  background-color: '{{accent-color}}'; }  md-slider.md-THEME_NAME-theme .md-sign:after {    border-top-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-thumb-text {  color: '{{accent-contrast}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-track.md-track-fill {  background-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-thumb:after {  border-color: '{{warn-color}}';  background-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-sign {  background-color: '{{warn-color}}'; }  md-slider.md-THEME_NAME-theme.md-warn .md-sign:after {    border-top-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-thumb-text {  color: '{{warn-contrast}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-track.md-track-fill {  background-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-thumb:after {  border-color: '{{primary-color}}';  background-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-sign {  background-color: '{{primary-color}}'; }  md-slider.md-THEME_NAME-theme.md-primary .md-sign:after {    border-top-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-thumb-text {  color: '{{primary-contrast}}'; }md-slider.md-THEME_NAME-theme[disabled] .md-thumb:after {  border-color: '{{foreground-3}}'; }md-slider.md-THEME_NAME-theme[disabled]:not(.md-min) .md-thumb:after {  background-color: '{{foreground-3}}'; }.md-subheader.md-THEME_NAME-theme {  color: '{{ foreground-2-0.23 }}';  background-color: '{{background-hue-3}}'; }  .md-subheader.md-THEME_NAME-theme.md-primary {    color: '{{primary-color}}'; }  .md-subheader.md-THEME_NAME-theme.md-accent {    color: '{{accent-color}}'; }  .md-subheader.md-THEME_NAME-theme.md-warn {    color: '{{warn-color}}'; }md-switch.md-THEME_NAME-theme .md-thumb {  background-color: '{{background-50}}'; }md-switch.md-THEME_NAME-theme .md-bar {  background-color: '{{background-500}}'; }md-switch.md-THEME_NAME-theme.md-checked .md-thumb {  background-color: '{{accent-color}}'; }md-switch.md-THEME_NAME-theme.md-checked .md-bar {  background-color: '{{accent-color-0.5}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-primary .md-thumb {  background-color: '{{primary-color}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-primary .md-bar {  background-color: '{{primary-color-0.5}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-warn .md-thumb {  background-color: '{{warn-color}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-warn .md-bar {  background-color: '{{warn-color-0.5}}'; }md-switch.md-THEME_NAME-theme[disabled] .md-thumb {  background-color: '{{background-400}}'; }md-switch.md-THEME_NAME-theme[disabled] .md-bar {  background-color: '{{foreground-4}}'; }md-switch.md-THEME_NAME-theme:focus .md-label:not(:empty) {  border-color: '{{foreground-1}}';  border-style: dotted; }md-tabs.md-THEME_NAME-theme .md-header {  background-color: transparent; }md-tabs.md-THEME_NAME-theme .md-paginator md-icon {  color: '{{primary-color}}'; }md-tabs.md-THEME_NAME-theme.md-accent .md-header {  background-color: '{{accent-color}}'; }md-tabs.md-THEME_NAME-theme.md-accent md-tab:not([disabled]) {  color: '{{accent-100}}'; }  md-tabs.md-THEME_NAME-theme.md-accent md-tab:not([disabled]).active {    color: '{{accent-contrast}}'; }md-tabs.md-THEME_NAME-theme.md-primary .md-header {  background-color: '{{primary-color}}'; }md-tabs.md-THEME_NAME-theme.md-primary md-tab:not([disabled]) {  color: '{{primary-100}}'; }  md-tabs.md-THEME_NAME-theme.md-primary md-tab:not([disabled]).active {    color: '{{primary-contrast}}'; }md-tabs.md-THEME_NAME-theme.md-primary md-tab {  color: '{{primary-100}}'; }  md-tabs.md-THEME_NAME-theme.md-primary md-tab[disabled] {    color: '{{foreground-3}}'; }  md-tabs.md-THEME_NAME-theme.md-primary md-tab:focus {    color: '{{primary-contrast}}';    background-color: '{{primary-contrast-0.1}}'; }  md-tabs.md-THEME_NAME-theme.md-primary md-tab.active {    color: '{{primary-contrast}}'; }  md-tabs.md-THEME_NAME-theme.md-primary md-tab .md-ripple-container {    color: '{{primary-contrast}}'; }md-tabs.md-THEME_NAME-theme.md-warn .md-header {  background-color: '{{warn-color}}'; }md-tabs.md-THEME_NAME-theme.md-warn md-tab:not([disabled]) {  color: '{{warn-100}}'; }  md-tabs.md-THEME_NAME-theme.md-warn md-tab:not([disabled]).active {    color: '{{warn-contrast}}'; }md-tabs.md-THEME_NAME-theme md-tabs-ink-bar {  color: '{{accent-color}}';  background: '{{accent-color}}'; }md-tabs.md-THEME_NAME-theme md-tab {  color: '{{foreground-2}}'; }  md-tabs.md-THEME_NAME-theme md-tab[disabled] {    color: '{{foreground-3}}'; }  md-tabs.md-THEME_NAME-theme md-tab:focus {    color: '{{foreground-1}}'; }  md-tabs.md-THEME_NAME-theme md-tab.active {    color: '{{primary-color}}'; }  md-tabs.md-THEME_NAME-theme md-tab .md-ripple-container {    color: '{{accent-100}}'; }md-input-group.md-THEME_NAME-theme input, md-input-group.md-THEME_NAME-theme textarea {  text-shadow: '{{foreground-shadow}}'; }  md-input-group.md-THEME_NAME-theme input::-webkit-input-placeholder, md-input-group.md-THEME_NAME-theme input::-moz-placeholder, md-input-group.md-THEME_NAME-theme input:-moz-placeholder, md-input-group.md-THEME_NAME-theme input:-ms-input-placeholder, md-input-group.md-THEME_NAME-theme textarea::-webkit-input-placeholder, md-input-group.md-THEME_NAME-theme textarea::-moz-placeholder, md-input-group.md-THEME_NAME-theme textarea:-moz-placeholder, md-input-group.md-THEME_NAME-theme textarea:-ms-input-placeholder {    color: '{{foreground-3}}'; }md-input-group.md-THEME_NAME-theme label {  text-shadow: '{{foreground-shadow}}';  color: '{{foreground-3}}'; }md-input-group.md-THEME_NAME-theme input, md-input-group.md-THEME_NAME-theme textarea {  color: '{{foreground-1}}';  border-color: '{{foreground-4}}'; }md-input-group.md-THEME_NAME-theme.md-input-focused input, md-input-group.md-THEME_NAME-theme.md-input-focused textarea {  border-color: '{{primary-500}}'; }md-input-group.md-THEME_NAME-theme.md-input-focused label {  color: '{{primary-500}}'; }md-input-group.md-THEME_NAME-theme.md-input-focused.md-accent input, md-input-group.md-THEME_NAME-theme.md-input-focused.md-accent textarea {  border-color: '{{accent-500}}'; }md-input-group.md-THEME_NAME-theme.md-input-focused.md-accent label {  color: '{{accent-500}}'; }md-input-group.md-THEME_NAME-theme.md-input-has-value:not(.md-input-focused) label {  color: '{{foreground-2}}'; }md-input-group.md-THEME_NAME-theme .md-input[disabled] {  border-bottom-color: '{{foreground-4}}';  color: '{{foreground-3}}'; }md-toast.md-THEME_NAME-theme {  background-color: '{{foreground-1}}';  color: '{{background-50}}'; }  md-toast.md-THEME_NAME-theme .md-button {    color: '{{background-50}}'; }    md-toast.md-THEME_NAME-theme .md-button.md-highlight {      color: '{{primary-A200}}'; }      md-toast.md-THEME_NAME-theme .md-button.md-highlight.md-accent {        color: '{{accent-A200}}'; }      md-toast.md-THEME_NAME-theme .md-button.md-highlight.md-warn {        color: '{{warn-A200}}'; }md-toolbar.md-THEME_NAME-theme {  background-color: '{{primary-color}}';  color: '{{primary-contrast}}'; }  md-toolbar.md-THEME_NAME-theme .md-button {    color: '{{primary-contrast}}'; }  md-toolbar.md-THEME_NAME-theme.md-accent {    background-color: '{{accent-color}}';    color: '{{accent-contrast}}'; }  md-toolbar.md-THEME_NAME-theme.md-warn {    background-color: '{{warn-color}}';    color: '{{warn-contrast}}'; }md-tooltip.md-THEME_NAME-theme {  color: '{{background-A100}}'; }  md-tooltip.md-THEME_NAME-theme .md-background {    background-color: '{{foreground-2}}'; }");
