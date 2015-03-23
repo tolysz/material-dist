@@ -2810,7 +2810,20 @@ md-autocomplete {
   display: block;
   height: 40px;
   position: relative;
-  overflow: visible; }
+  overflow: visible;
+  min-width: 190px; }
+  md-autocomplete[md-floating-label] {
+    box-shadow: none;
+    border-radius: 0;
+    background: transparent;
+    height: auto; }
+    md-autocomplete[md-floating-label] md-autocomplete-wrap {
+      height: auto; }
+    md-autocomplete[md-floating-label] md-input-container {
+      padding-bottom: 0; }
+    md-autocomplete[md-floating-label] button {
+      top: auto;
+      bottom: 5px; }
   md-autocomplete md-autocomplete-wrap {
     display: block;
     position: relative;
@@ -2835,7 +2848,7 @@ md-autocomplete {
         transition: opacity 0.15s linear; }
         md-autocomplete md-autocomplete-wrap md-progress-linear.ng-leave.ng-leave-active {
           opacity: 0; }
-  md-autocomplete input {
+  md-autocomplete input:not(.md-input) {
     position: absolute;
     left: 0;
     top: 0;
@@ -2850,7 +2863,7 @@ md-autocomplete {
     outline: none;
     z-index: 2;
     background: transparent; }
-    md-autocomplete input::-ms-clear {
+    md-autocomplete input:not(.md-input)::-ms-clear {
       display: none; }
   md-autocomplete button {
     position: absolute;
@@ -3194,7 +3207,7 @@ md-bottom-sheet {
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    border-radius: 50%;
+    background-clip: padding-box;
     overflow: hidden;
     -webkit-transform: translate3d(0, 0, 0);
             transform: translate3d(0, 0, 0);
@@ -3225,6 +3238,11 @@ md-bottom-sheet {
       bottom: auto;
       left: 20px;
       position: absolute; }
+    .md-button.md-fab .md-ripple-container {
+      border-radius: 50%;
+      background-clip: padding-box;
+      overflow: hidden;
+      -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC); }
     .md-button.md-fab md-icon {
       margin-top: 0; }
     .md-button.md-fab.md-mini {
