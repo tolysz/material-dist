@@ -2776,59 +2776,6 @@ select, button, textarea, input {
     max-height: 66.66%; }
  }
 
-md-backdrop {
-  z-index: 50;
-  background-color: rgba(0, 0, 0, 0);
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0; }
-  md-backdrop.md-select-backdrop {
-    z-index: 81; }
-  md-backdrop.md-dialog-backdrop {
-    z-index: 79; }
-  md-backdrop.md-bottom-sheet-backdrop {
-    z-index: 69; }
-  md-backdrop.md-sidenav-backdrop {
-    z-index: 59; }
-  md-backdrop.md-click-catcher {
-    position: fixed; }
-  md-backdrop.ng-enter {
-    -webkit-animation: cubic-bezier(0.25, 0.8, 0.25, 1) mdBackdropFadeIn 0.5s both;
-            animation: cubic-bezier(0.25, 0.8, 0.25, 1) mdBackdropFadeIn 0.5s both; }
-  md-backdrop.ng-leave {
-    -webkit-animation: cubic-bezier(0.55, 0, 0.55, 0.2) mdBackdropFadeOut 0.2s both;
-            animation: cubic-bezier(0.55, 0, 0.55, 0.2) mdBackdropFadeOut 0.2s both; }
-
-@-webkit-keyframes mdBackdropFadeIn {
-  from {
-    opacity: 0; }
-
-  to {
-    opacity: 1; } }
-
-@keyframes mdBackdropFadeIn {
-  from {
-    opacity: 0; }
-
-  to {
-    opacity: 1; } }
-
-@-webkit-keyframes mdBackdropFadeOut {
-  from {
-    opacity: 1; }
-
-  to {
-    opacity: 0; } }
-
-@keyframes mdBackdropFadeOut {
-  from {
-    opacity: 1; }
-
-  to {
-    opacity: 0; } }
-
 @-webkit-keyframes md-autocomplete-list-out {
   0% {
     -webkit-animation-timing-function: linear;
@@ -3204,6 +3151,59 @@ md-bottom-sheet {
         text-align: center;
         text-transform: none;
         padding-top: 8px; }
+
+md-backdrop {
+  z-index: 50;
+  background-color: rgba(0, 0, 0, 0);
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0; }
+  md-backdrop.md-select-backdrop {
+    z-index: 81; }
+  md-backdrop.md-dialog-backdrop {
+    z-index: 79; }
+  md-backdrop.md-bottom-sheet-backdrop {
+    z-index: 69; }
+  md-backdrop.md-sidenav-backdrop {
+    z-index: 59; }
+  md-backdrop.md-click-catcher {
+    position: fixed; }
+  md-backdrop.ng-enter {
+    -webkit-animation: cubic-bezier(0.25, 0.8, 0.25, 1) mdBackdropFadeIn 0.5s both;
+            animation: cubic-bezier(0.25, 0.8, 0.25, 1) mdBackdropFadeIn 0.5s both; }
+  md-backdrop.ng-leave {
+    -webkit-animation: cubic-bezier(0.55, 0, 0.55, 0.2) mdBackdropFadeOut 0.2s both;
+            animation: cubic-bezier(0.55, 0, 0.55, 0.2) mdBackdropFadeOut 0.2s both; }
+
+@-webkit-keyframes mdBackdropFadeIn {
+  from {
+    opacity: 0; }
+
+  to {
+    opacity: 1; } }
+
+@keyframes mdBackdropFadeIn {
+  from {
+    opacity: 0; }
+
+  to {
+    opacity: 1; } }
+
+@-webkit-keyframes mdBackdropFadeOut {
+  from {
+    opacity: 1; }
+
+  to {
+    opacity: 0; } }
+
+@keyframes mdBackdropFadeOut {
+  from {
+    opacity: 1; }
+
+  to {
+    opacity: 0; } }
 
 /**
  * Position a FAB button.
@@ -6178,7 +6178,8 @@ md-tabs {
   margin: 0;
   border-radius: 2px;
   overflow: hidden;
-  position: relative; }
+  position: relative;
+  transition: height 0.5s cubic-bezier(0.35, 0, 0.25, 1); }
   md-tabs:not(.md-no-tab-content) {
     min-height: 248px; }
   md-tabs[md-align-tabs="bottom"] {
@@ -6193,10 +6194,6 @@ md-tabs {
   md-tabs[md-border-bottom] md-tabs-wrapper {
     border-width: 0 0 1px;
     border-style: solid; }
-  md-tabs[md-dynamic-height] {
-    transition: height 0.5s cubic-bezier(0.35, 0, 0.25, 1); }
-    md-tabs[md-dynamic-height] md-tabs-content-wrapper md-tab-content {
-      bottom: initial; }
   md-tabs md-tabs-wrapper {
     display: block;
     position: relative; }
@@ -6301,11 +6298,20 @@ md-tabs {
       display: block;
       transition: left 0.5s cubic-bezier(0.35, 0, 0.25, 1);
       position: relative;
-      width: 999999px; }
+      width: 999999px;
+      left: 0;
+      -webkit-transform: translate3d(0, 0, 0);
+              transform: translate3d(0, 0, 0); }
       md-tabs md-tabs-wrapper md-pagination-wrapper:after {
         content: '';
         display: table;
         clear: both; }
+      md-tabs md-tabs-wrapper md-pagination-wrapper.md-center-tabs {
+        width: initial;
+        float: left;
+        left: 50%;
+        -webkit-transform: translate3d(-50%, 0, 0);
+                transform: translate3d(-50%, 0, 0); }
     md-tabs md-tabs-wrapper.md-stretch-tabs md-pagination-wrapper {
       width: 100%;
       display: -webkit-flex;
@@ -6337,7 +6343,11 @@ md-tabs {
       -webkit-transform: translateX(0);
               transform: translateX(0);
       transition: -webkit-transform 0.5s cubic-bezier(0.35, 0, 0.25, 1);
-      transition: transform 0.5s cubic-bezier(0.35, 0, 0.25, 1); }
+      transition: transform 0.5s cubic-bezier(0.35, 0, 0.25, 1);
+      overflow: auto; }
+      md-tabs md-tabs-content-wrapper md-tab-content.md-no-scroll {
+        bottom: auto;
+        overflow: hidden; }
       md-tabs md-tabs-content-wrapper md-tab-content.ng-leave, md-tabs md-tabs-content-wrapper md-tab-content.md-no-transition {
         transition: none; }
       md-tabs md-tabs-content-wrapper md-tab-content.md-left {
