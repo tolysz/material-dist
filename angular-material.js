@@ -1181,7 +1181,7 @@ mdCompilerService.$inject = ["$q", "$http", "$injector", "$compile", "$controlle
 
     /**
      * $get is used to build an instance of $mdGesture
-     * ngInject
+     * @ngInject
      */
     $get : function($$MdGestureHandler, $$rAF, $timeout) {
          return new MdGesture($$MdGestureHandler, $$rAF, $timeout);
