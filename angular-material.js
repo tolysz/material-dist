@@ -617,8 +617,7 @@ angular.module('material.core')
           position: 'fixed',
           width: '100%',
           overflowY: 'scroll',
-          transform: 'translateY(-' + scrollOffset + 'px)',
-          '-webkit-transform': 'translateY(-' + scrollOffset + 'px)'
+          top: -scrollOffset + 'px'
         });
 
         return function restoreScroll() {
@@ -3053,7 +3052,6 @@ angular.module('material.core.theming.palette', [])
     'contrastStrongLightColors': '300 400'
   },
   'grey': {
-    '0': '#ffffff',
     '50': '#fafafa',
     '100': '#f5f5f5',
     '200': '#eeeeee',
@@ -11514,7 +11512,7 @@ angular
 
 function MdHighlightCtrl ($scope, $element, $interpolate) {
   var term = $element.attr('md-highlight-text'),
-      text = $interpolate($element.text())($scope),
+      text = $interpolate($element.html())($scope),
       flags = $element.attr('md-highlight-flags') || '',
       watcher = $scope.$watch(term, function (term) {
         var regex = getRegExp(term, flags),
