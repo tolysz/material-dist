@@ -1141,6 +1141,7 @@ mdCompilerService.$inject = ["$q", "$http", "$injector", "$compile", "$controlle
 
   // Used to attach event listeners once when multiple ng-apps are running.
   var isInitialized = false;
+  
   angular
     .module('material.core.gestures', [ ])
     .provider('$mdGesture', MdGestureProvider)
@@ -1166,6 +1167,7 @@ mdCompilerService.$inject = ["$q", "$http", "$injector", "$compile", "$controlle
      *
      *   });
      * </hljs>
+     *
      */
   function MdGestureProvider() { }
 
@@ -1556,7 +1558,6 @@ mdCompilerService.$inject = ["$q", "$http", "$injector", "$compile", "$controlle
 
   /**
    * Attach Gestures: hook document and check shouldHijack clicks
-   * @ngInject
    */
   function attachToDocument( $mdGesture, $$MdGestureHandler ) {
 
