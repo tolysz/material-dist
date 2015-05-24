@@ -3305,7 +3305,6 @@ select, button, textarea, input {
     height: 40px; } }
 
 md-autocomplete {
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
   border-radius: 2px;
   display: block;
   height: 40px;
@@ -3314,7 +3313,6 @@ md-autocomplete {
   min-width: 190px; }
   md-autocomplete[md-floating-label] {
     padding-bottom: 26px;
-    box-shadow: none;
     border-radius: 0;
     background: transparent;
     height: auto; }
@@ -3429,7 +3427,6 @@ md-autocomplete {
 
 .md-autocomplete-suggestions {
   position: absolute;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
   margin: 0;
   list-style: none;
   padding: 0;
@@ -3457,6 +3454,11 @@ md-autocomplete {
               animation: md-autocomplete-list-out 0.2s; }
     .md-autocomplete-suggestions li:focus {
       outline: none; }
+
+@media screen and (-ms-high-contrast: active) {
+  md-autocomplete, .md-autocomplete-suggestions {
+    border: 1px solid #fff; }
+ }
 
 md-backdrop {
   z-index: 50;
@@ -3670,6 +3672,11 @@ md-bottom-sheet {
         text-transform: none;
         padding-top: 8px; }
 
+@media screen and (-ms-high-contrast: active) {
+  md-bottom-sheet {
+    border: 1px solid #fff; }
+ }
+
 /**
  * Position a FAB button.
  */
@@ -3722,7 +3729,13 @@ md-bottom-sheet {
     line-height: 48px;
     padding-left: 0;
     padding-right: 0;
-    width: 48px; }
+    width: 48px;
+    border-radius: 50%; }
+    .md-button.md-icon-button .md-ripple-container {
+      border-radius: 50%;
+      background-clip: padding-box;
+      overflow: hidden;
+      -webkit-mask-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC'); }
   .md-button.md-fab {
     z-index: 20;
     line-height: 56px;
@@ -4067,6 +4080,14 @@ md-checkbox {
   .md-chips md-autocomplete button {
     display: none; }
 
+@media screen and (-ms-high-contrast: active) {
+  .md-chip-input-container, md-chip {
+    border: 1px solid #fff; }
+
+  .md-chip-input-container md-autocomplete {
+    border: none; }
+ }
+
 md-content {
   display: block;
   position: relative;
@@ -4268,7 +4289,8 @@ md-icon {
   md-icon svg {
     pointer-events: none; }
   md-icon[md-font-icon] {
-    line-height: 1; }
+    line-height: 1;
+    width: auto; }
 
 md-input-container {
   display: -webkit-flex;
@@ -6469,6 +6491,9 @@ md-optgroup {
 @media screen and (-ms-high-contrast: active) {
   .md-select-backdrop {
     background-color: transparent; }
+
+  md-select-menu {
+    border: 1px solid #fff; }
  }
 
 md-sidenav {
@@ -7373,6 +7398,10 @@ md-toolbar {
       max-height: 48px; }
   md-toolbar .md-indent {
     margin-left: 64px; }
+  md-toolbar ~ md-content > md-list {
+    padding: 0; }
+    md-toolbar ~ md-content > md-list md-list-item:last-child md-divider {
+      display: none; }
 
 .md-toolbar-tools {
   font-weight: 400;
